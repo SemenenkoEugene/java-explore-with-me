@@ -5,11 +5,13 @@ import org.springframework.stereotype.Service;
 import ru.practicum.EndpointHitDto;
 import ru.practicum.ViewStatsDto;
 import ru.practicum.mapper.HitMapper;
+import ru.practicum.mapper.ViewStatsMapper;
 import ru.practicum.model.EndpointHit;
 import ru.practicum.repository.StatsRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,18 +27,9 @@ public class StatsServiceImpl implements StatsService {
 
     @Override
     public List<ViewStatsDto> findStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
-        if (unique) {
-            if (uris == null) {
-                return statsRepository.getAllUniqueStats(start, end);
-            } else {
-                return statsRepository.getAllUniqueStatsWithUris(start, end, uris);
-            }
-        } else {
-            if (uris == null) {
-                return statsRepository.getAllStats(start, end);
-            } else {
-                return statsRepository.getAllStatsWithUris(start, end, uris);
-            }
-        }
+        return (unique ? statsRepository.findViewStatsWithUniqueIp(start, end, uris)
+                : statsRepository.findViewStats(start, end, uris)).stream()
+                .map(ViewStatsMapper::toDto)
+                .collect(Collectors.toList());
     }
 }
