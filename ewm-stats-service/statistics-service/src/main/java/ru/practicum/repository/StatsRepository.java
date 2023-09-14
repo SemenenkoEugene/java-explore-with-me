@@ -11,20 +11,32 @@ import java.util.List;
 
 @Repository
 public interface StatsRepository extends JpaRepository<EndpointHit, Long> {
-
-    @Query(" SELECT new ru.practicum.ViewStatsDto(eh.app, eh.uri, COUNT(eh.ip)) " +
+    @Query("SELECT eh.app AS app, eh.uri AS uri, COUNT(eh.ip) AS hits " +
             "FROM EndpointHit eh " +
-            "WHERE eh.timestamp BETWEEN ?1 AND ?2 " +
-            "AND (eh.uri IN (?3) OR (?3) is NULL) " +
-            "GROUP BY eh.app, eh.uri " +
-            "ORDER BY COUNT(eh.ip) DESC ")
-    List<ViewStatsDto> findViewStats(LocalDateTime start, LocalDateTime end, List<String> uris);
+            "WHERE eh.timestamp BETWEEN :start AND :end " +
+            "GROUP BY eh.app, eh.uri, eh.ip " +
+            "ORDER BY hits DESC ")
+    List<ViewStatsDto> countByTimestamp(LocalDateTime start, LocalDateTime end);
 
-    @Query(" SELECT new ru.practicum.ViewStatsDto(eh.app, eh.uri, COUNT(DISTINCT eh.ip)) " +
-            "FROM EndpointHit eh " +
-            "WHERE eh.timestamp BETWEEN ?1 AND ?2 " +
-            "AND (eh.uri IN (?3) OR (?3) is NULL) " +
-            "GROUP BY eh.app, eh.uri " +
-            "ORDER BY COUNT(DISTINCT eh.ip) DESC ")
-    List<ViewStatsDto> findViewStatsWithUniqueIp(LocalDateTime start, LocalDateTime end, List<String> uris);
+    @Query("SELECT h.app AS app, h.uri AS uri, COUNT(DISTINCT h.ip) AS hits " +
+            "FROM EndpointHit h " +
+            "WHERE h.timestamp BETWEEN :start AND :end " +
+            "GROUP BY h.app, h.uri, h.ip " +
+            "ORDER BY hits DESC "
+    )
+    List<ViewStatsDto> countByTimestampUniqueIp(LocalDateTime start, LocalDateTime end);
+
+    @Query("SELECT h.app AS app, h.uri AS uri, COUNT(DISTINCT h.ip) AS hits " +
+            "FROM EndpointHit h " +
+            "WHERE h.timestamp BETWEEN ?1 AND ?2 " +
+            "AND h.uri IN (?3) " +
+            "GROUP BY h.app, h.uri ORDER BY hits DESC ")
+    List<ViewStatsDto> findStatWithUnique(LocalDateTime start, LocalDateTime end, List<String> uris);
+
+    @Query("SELECT h.app AS app, h.uri AS uri, COUNT(h.ip) AS hits " +
+            "FROM EndpointHit h " +
+            "WHERE h.timestamp BETWEEN ?1 AND ?2 " +
+            "AND h.uri IN (?3) " +
+            "GROUP BY h.app, h.uri ORDER BY hits DESC ")
+    List<ViewStatsDto> findStatNotUnique(LocalDateTime start, LocalDateTime end, List<String> uris);
 }
