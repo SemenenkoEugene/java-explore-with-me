@@ -9,6 +9,7 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 public class StatsClient extends BaseClient {
@@ -26,14 +27,15 @@ public class StatsClient extends BaseClient {
         return post("/hit", dto);
     }
 
-    public ResponseEntity<Object> findStats(LocalDateTime start, LocalDateTime end, Boolean unique) {
+    public ResponseEntity<Object> findStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
         String encodeStartTime = URLEncoder.encode(start.toString(), StandardCharsets.UTF_8);
         String encodeEndTime = URLEncoder.encode(end.toString(), StandardCharsets.UTF_8);
         Map<String, Object> parameters = Map.of(
                 "start", encodeStartTime,
                 "end", encodeEndTime,
+                "uris", uris,
                 "unique", unique
         );
-        return get("/stats?start={start}&end={end}&unique={unique}", parameters);
+        return get("/stats?start={start}&end={end}&uris={uris}&unique={unique}", parameters);
     }
 }

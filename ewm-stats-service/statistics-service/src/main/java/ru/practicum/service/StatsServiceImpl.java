@@ -9,8 +9,7 @@ import ru.practicum.model.EndpointHit;
 import ru.practicum.repository.StatsRepository;
 
 import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -27,44 +26,17 @@ public class StatsServiceImpl implements StatsService {
     @Override
     public List<ViewStatsDto> findStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
         if (unique) {
-            List<EndpointHit> uniqueHits = statsRepository.findDistinctFirstByUriInAndTimestampBetween(uris, start, end);
-            return mapStatsByHits(uniqueHits);
-        }
-        if (!uris.isEmpty()) {
-            List<EndpointHit> hits = statsRepository.findAllByUriInAndTimestampBetween(uris, start, end);
-            return mapStatsByHits(hits);
+            if (uris == null) {
+                return statsRepository.getAllUniqueStats(start, end);
+            } else {
+                return statsRepository.getAllUniqueStatsWithUris(start, end, uris);
+            }
         } else {
-            List<EndpointHit> hitsWithoutUris = statsRepository.findAllByTimestampBetween(start, end);
-            return mapStatsByHitsWithoutUris(hitsWithoutUris);
+            if (uris == null) {
+                return statsRepository.getAllStats(start, end);
+            } else {
+                return statsRepository.getAllStatsWithUris(start, end, uris);
+            }
         }
-
-    }
-
-    private List<ViewStatsDto> mapStatsByHitsWithoutUris(List<EndpointHit> hitsWithoutUris) {
-        Map<String, Long> uriCounts = hitsWithoutUris.stream()
-                .collect(Collectors.groupingBy(EndpointHit::getUri, Collectors.counting()));
-        List<ViewStatsDto> stats = new ArrayList<>();
-        for (EndpointHit hit : hitsWithoutUris) {
-            ViewStatsDto stat = HitMapper.toViewDto(hit);
-            Long uriCount = uriCounts.get(stat.getUri());
-            stat.setHits(uriCount);
-            stats.add(stat);
-        }
-        return stats.stream()
-                .sorted(Comparator.comparing(ViewStatsDto::getHits).reversed())
-                .collect(Collectors.toList());
-    }
-
-    private ArrayList<ViewStatsDto> mapStatsByHits(List<EndpointHit> uniqueHits) {
-        Map<String, Long> uriCounts = uniqueHits.stream()
-                .collect(Collectors.groupingBy(EndpointHit::getUri, Collectors.counting()));
-        Set<ViewStatsDto> stats = new TreeSet<>(Comparator.comparing(ViewStatsDto::getHits).reversed());
-        for (EndpointHit uniqueHit : uniqueHits) {
-            ViewStatsDto stat = HitMapper.toViewDto(uniqueHit);
-            Long uriCount = uriCounts.get(stat.getUri());
-            stat.setHits(uriCount);
-            stats.add(stat);
-        }
-        return new ArrayList<>(stats);
     }
 }
