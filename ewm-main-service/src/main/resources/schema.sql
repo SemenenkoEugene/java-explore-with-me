@@ -41,9 +41,9 @@ CREATE TABLE IF NOT EXISTS events
     event_date                  TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     event_create_date           TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     event_publish_date          TIMESTAMP WITHOUT TIME ZONE,
-    event_participant_limit     INTEGER default 0,
-    event_is_paid               BOOLEAN DEFAULT false,
-    event_is_request_moderation BOOLEAN default false,
+    event_participant_limit     INTEGER DEFAULT 0,
+    event_is_paid               BOOLEAN DEFAULT FALSE,
+    event_is_request_moderation BOOLEAN DEFAULT FALSE,
 
     CONSTRAINT fk_event_initiator FOREIGN KEY (event_initiator_user_id) REFERENCES users (user_id),
     CONSTRAINT fk_event_category FOREIGN KEY (event_category_id) REFERENCES categories (category_id),
