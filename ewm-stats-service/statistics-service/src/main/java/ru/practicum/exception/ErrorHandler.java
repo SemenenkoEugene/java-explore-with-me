@@ -1,6 +1,5 @@
 package ru.practicum.exception;
 
-import lombok.Generated;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 @Slf4j
-@Generated
 public class ErrorHandler {
 
     @ExceptionHandler

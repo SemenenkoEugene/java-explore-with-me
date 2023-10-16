@@ -1,12 +1,11 @@
 package ru.practicum.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 import ru.practicum.EndpointHitDto;
 import ru.practicum.ViewStatsDto;
+import ru.practicum.exception.ValidationException;
 import ru.practicum.mapper.EndpointHitMapper;
 import ru.practicum.repository.StatsRepository;
 import ru.practicum.repository.ViewStatsProjection;
@@ -30,9 +29,10 @@ public class StatsServiceImpl implements StatsService {
     @Override
     @Transactional(readOnly = true)
     public List<ViewStatsDto> findStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
+
         if (end != null && start != null) {
             if (!end.isAfter(start)) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Недопустимый диапазон дат");
+                throw new ValidationException("Invalid date range");
             }
         }
 
