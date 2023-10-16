@@ -41,7 +41,7 @@ public class StatsController {
         if (end == null) {
             throw new ValidationException("Required request parameter 'end' for method parameter type LocalDateTime is not present");
         }
-        log.info("Статистика получена для start={},end={},uris={},unique={}", start.toString(), end.toString(), uris, unique);
+        log.info("Статистика получена для start={},end={},uris={},unique={}", start, end, uris, unique);
         return statsService.findStats(start, end, uris, unique);
     }
 }
