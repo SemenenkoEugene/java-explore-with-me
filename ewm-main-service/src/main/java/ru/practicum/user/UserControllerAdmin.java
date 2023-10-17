@@ -1,6 +1,7 @@
 package ru.practicum.user;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.exception.BadRequestException;
@@ -12,6 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/admin/users")
 @RequiredArgsConstructor
+@Slf4j
 public class UserControllerAdmin {
     private final UserService userService;
 
@@ -19,6 +21,7 @@ public class UserControllerAdmin {
     public List<UserDto> get(@RequestParam(required = false) List<Long> ids,
                              @Valid @RequestParam(defaultValue = "0") @Min(0) int from,
                              @Valid @RequestParam(defaultValue = "10") @Min(1) int size) {
+        log.debug("Получен GET запрос на просмотр пользователей");
         return userService.get(ids, from, size);
     }
 
@@ -38,12 +41,14 @@ public class UserControllerAdmin {
                 throw new BadRequestException("Domain part is too long");
             }
         }
+        log.debug("Получен POST запрос на создание пользователя {}", userDto);
         return userService.create(userDto);
     }
 
     @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable long userId) {
+        log.debug("Получен DELETE запрос для пользователя с ID {}", userId);
         userService.delete(userId);
     }
 }

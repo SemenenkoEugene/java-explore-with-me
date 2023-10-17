@@ -1,6 +1,7 @@
 package ru.practicum.event.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.event.dto.EventFullDto;
@@ -18,6 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/events")
 @RequiredArgsConstructor
+@Slf4j
 public class EventControllerPublic {
     private final EventService eventService;
 
@@ -35,13 +37,14 @@ public class EventControllerPublic {
         if (rangeStart != null && rangeEnd != null && rangeStart.isAfter(rangeEnd)) {
             throw new BadRequestException("Start date must be before end date");
         }
-
+        log.debug("Получен GET запрос на просмотр событий по фильтрам");
         return eventService.getAllPublic(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size, request);
     }
 
     @GetMapping("{eventId}")
     public EventFullDto getById(@PathVariable long eventId,
                                 HttpServletRequest request) {
+        log.debug("Получен GET запрос на просмотр события по ID {}", eventId);
         return eventService.getByIdPublic(eventId, request);
     }
 
