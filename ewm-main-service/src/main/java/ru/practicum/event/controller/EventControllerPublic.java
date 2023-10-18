@@ -2,14 +2,18 @@ package ru.practicum.event.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.EndpointHitDto;
+import ru.practicum.StatsClient;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.service.EventService;
 import ru.practicum.exception.BadRequestException;
 import ru.practicum.util.ConstantsDate;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
@@ -21,7 +25,18 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class EventControllerPublic {
+
     private final EventService eventService;
+
+    @Value("${STAT_SERVER_URL:http://localhost:9090}")
+    private String statClientUrl;
+
+    private StatsClient statsClient;
+
+    @PostConstruct
+    private void init() {
+        statsClient = new StatsClient(statClientUrl);
+    }
 
     @GetMapping()
     public List<EventShortDto> getAll(@RequestParam(defaultValue = "") String text,
@@ -37,6 +52,12 @@ public class EventControllerPublic {
         if (rangeStart != null && rangeEnd != null && rangeStart.isAfter(rangeEnd)) {
             throw new BadRequestException("Start date must be before end date");
         }
+        statsClient.saveHit(EndpointHitDto.builder()
+                .app("ewm")
+                .uri(request.getRequestURI())
+                .ip(request.getRemoteAddr())
+                .hitTimestamp(LocalDateTime.now())
+                .build());
         log.debug("Получен GET запрос на просмотр событий по фильтрам");
         return eventService.getAllPublic(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size, request);
     }
@@ -44,6 +65,13 @@ public class EventControllerPublic {
     @GetMapping("{eventId}")
     public EventFullDto getById(@PathVariable long eventId,
                                 HttpServletRequest request) {
+
+        statsClient.saveHit(EndpointHitDto.builder()
+                .app("ewm")
+                .uri(request.getRequestURI())
+                .ip(request.getRemoteAddr())
+                .hitTimestamp(LocalDateTime.now())
+                .build());
         log.debug("Получен GET запрос на просмотр события по ID {}", eventId);
         return eventService.getByIdPublic(eventId, request);
     }

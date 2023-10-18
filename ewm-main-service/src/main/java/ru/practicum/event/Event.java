@@ -3,7 +3,7 @@ package ru.practicum.event;
 import lombok.Getter;
 import lombok.Setter;
 import ru.practicum.category.Category;
-import ru.practicum.event.location.Location;
+import ru.practicum.location.Location;
 import ru.practicum.user.User;
 
 import javax.persistence.*;
@@ -20,46 +20,46 @@ public class Event {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "event_initiator_user_id")
+    @JoinColumn(name = "initiator_user_id")
     private User initiator;
 
     @ManyToOne
-    @JoinColumn(name = "event_category_id")
+    @JoinColumn(name = "category_id")
     private Category category;
 
     @ManyToOne
-    @JoinColumn(name = "event_location_id")
+    @JoinColumn(name = "location_id")
     private Location location;
 
-    @Column(name = "event_title")
+    @Column(name = "title")
     private String title;
 
-    @Column(name = "event_annotation")
+    @Column(name = "annotation")
     private String annotation;
 
-    @Column(name = "event_description")
+    @Column(name = "description")
     private String description;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "event_state")
+    @Column(name = "state")
     private EventState state;
 
-    @Column(name = "event_date")
+    @Column(name = "date")
     private LocalDateTime eventDate;
 
-    @Column(name = "event_create_date")
+    @Column(name = "create_date")
     private LocalDateTime createdOn;
 
-    @Column(name = "event_publish_date")
+    @Column(name = "publish_date")
     private LocalDateTime publishedOn;
 
-    @Column(name = "event_participant_limit")
+    @Column(name = "participant_limit")
     private Integer participantLimit;
 
-    @Column(name = "event_is_paid")
+    @Column(name = "is_paid")
     private Boolean paid;
 
-    @Column(name = "event_is_request_moderation")
+    @Column(name = "is_request_moderation")
     private Boolean requestModeration;
 
 }

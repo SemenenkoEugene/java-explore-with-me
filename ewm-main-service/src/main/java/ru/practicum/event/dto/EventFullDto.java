@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import ru.practicum.category.CategoryDto;
 import ru.practicum.event.EventState;
-import ru.practicum.event.location.LocationDto;
+import ru.practicum.location.LocationDto;
 import ru.practicum.user.UserShortDto;
 import ru.practicum.util.ConstantsDate;
 

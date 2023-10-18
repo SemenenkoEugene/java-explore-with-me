@@ -7,7 +7,7 @@ import ru.practicum.category.Category;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventNewDto;
 import ru.practicum.event.dto.EventShortDto;
-import ru.practicum.event.location.Location;
+import ru.practicum.location.Location;
 
 @Mapper
 public interface EventMapper {

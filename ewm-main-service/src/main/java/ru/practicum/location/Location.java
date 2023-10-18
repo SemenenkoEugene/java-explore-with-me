@@ -1,4 +1,4 @@
-package ru.practicum.event.location;
+package ru.practicum.location;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -16,9 +16,9 @@ public class Location {
     @Column(name = "location_id")
     private Long id;
 
-    @Column(name = "location_lat")
+    @Column(name = "lat")
     private float lat;
 
-    @Column(name = "location_lon")
+    @Column(name = "lon")
     private float lon;
 }

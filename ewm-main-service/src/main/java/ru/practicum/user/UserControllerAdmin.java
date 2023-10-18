@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.exception.BadRequestException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
@@ -28,19 +27,6 @@ public class UserControllerAdmin {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UserDto create(@Valid @RequestBody UserDto userDto) {
-        String[] parts = userDto.getEmail().split("@");
-        String login = parts[0];
-        String domain = parts[1];
-        String[] domainParts = domain.split("\\.");
-        if (login.length() > 64) {
-            throw new BadRequestException("Login is too long");
-        }
-
-        for (String domainPart : domainParts) {
-            if (domainPart.length() > 64) {
-                throw new BadRequestException("Domain part is too long");
-            }
-        }
         log.debug("Получен POST запрос на создание пользователя {}", userDto);
         return userService.create(userDto);
     }

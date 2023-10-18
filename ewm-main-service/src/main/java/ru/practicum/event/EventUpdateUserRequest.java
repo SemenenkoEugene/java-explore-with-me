@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.event.location.LocationDto;
+import ru.practicum.location.LocationDto;
 import ru.practicum.util.ConstantsDate;
 
 import javax.validation.constraints.Future;

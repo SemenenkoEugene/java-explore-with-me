@@ -7,7 +7,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.EndpointHitDto;
 import ru.practicum.StatsClient;
 import ru.practicum.ViewStatsDto;
 import ru.practicum.category.Category;
@@ -17,12 +16,12 @@ import ru.practicum.event.controller.EventControllerPublic;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventNewDto;
 import ru.practicum.event.dto.EventShortDto;
-import ru.practicum.event.location.Location;
-import ru.practicum.event.location.LocationDto;
-import ru.practicum.event.location.LocationMapper;
-import ru.practicum.event.location.LocationRepository;
 import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.NotFoundException;
+import ru.practicum.location.Location;
+import ru.practicum.location.LocationDto;
+import ru.practicum.location.LocationMapper;
+import ru.practicum.location.LocationRepository;
 import ru.practicum.participationRequest.*;
 import ru.practicum.user.User;
 import ru.practicum.user.UserRepository;
@@ -38,6 +37,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class EventServiceImpl implements EventService {
 
+    public static final int TWO_HOURS = 2;
+    public static final int ONE_HOURS = 1;
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
@@ -63,14 +64,6 @@ public class EventServiceImpl implements EventService {
                                             int from,
                                             int size) {
         Pageable pageable = PageRequest.of(from, size);
-
-        if (users != null && users.size() == 1 && users.get(0).equals(0L)) {
-            users = null;
-        }
-
-        if (categories != null && categories.size() == 1 && categories.get(0).equals(0L)) {
-            categories = null;
-        }
 
         if (rangeStart == null) {
             rangeStart = LocalDateTime.now();
@@ -140,13 +133,6 @@ public class EventServiceImpl implements EventService {
                                             int from,
                                             int size,
                                             HttpServletRequest request) {
-        statsClient.saveHit(EndpointHitDto.builder()
-                .app("ewm")
-                .uri(request.getRequestURI())
-                .ip(request.getRemoteAddr())
-                .hitTimestamp(LocalDateTime.now())
-                .build());
-
         if (categories != null && categories.size() == 1 && categories.get(0).equals(0L)) {
             categories = null;
         }
@@ -207,16 +193,9 @@ public class EventServiceImpl implements EventService {
     public EventFullDto getByIdPublic(long eventId, HttpServletRequest request) {
         Event event = findEventById(eventId);
 
-        if (!event.getState().equals(EventState.PUBLISHED)) {
+        if (event.getState() != EventState.PUBLISHED) {
             throw new NotFoundException("Event with id=" + eventId + " was not found");
         }
-
-        statsClient.saveHit(EndpointHitDto.builder()
-                .app("ewm")
-                .uri(request.getRequestURI())
-                .ip(request.getRemoteAddr())
-                .hitTimestamp(LocalDateTime.now())
-                .build());
 
         List<String> eventUrls = Collections.singletonList("/events/" + event.getId());
 
@@ -232,7 +211,7 @@ public class EventServiceImpl implements EventService {
 
     @Transactional
     public EventFullDto create(long userId, EventNewDto eventNewDto) {
-        if (LocalDateTime.now().plusHours(2).isAfter(eventNewDto.getEventTimestamp())) {
+        if (LocalDateTime.now().plusHours(TWO_HOURS).isAfter(eventNewDto.getEventTimestamp())) {
             throw new ConflictException("The event date must be 2 hours from the current time or later.");
         }
 
@@ -265,7 +244,7 @@ public class EventServiceImpl implements EventService {
     public EventFullDto patchByAdmin(long eventId, EventUpdateAdminRequest updateEventAdminRequest) {
         Event event = findEventById(eventId);
 
-        if (updateEventAdminRequest.getEventTimestamp() != null && LocalDateTime.now().plusHours(1).isAfter(updateEventAdminRequest.getEventTimestamp())) {
+        if (updateEventAdminRequest.getEventTimestamp() != null && LocalDateTime.now().plusHours(ONE_HOURS).isAfter(updateEventAdminRequest.getEventTimestamp())) {
             throw new ConflictException("The event date must be 1 hours from the current time or later.");
         }
 

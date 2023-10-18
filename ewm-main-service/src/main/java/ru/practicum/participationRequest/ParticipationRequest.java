@@ -27,9 +27,9 @@ public class ParticipationRequest {
     private Event event;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "participation_request_status")
+    @Column(name = "status")
     private ParticipationRequestState status;
 
-    @Column(name = "participation_request_created_date")
+    @Column(name = "created_date")
     private LocalDateTime created;
 }

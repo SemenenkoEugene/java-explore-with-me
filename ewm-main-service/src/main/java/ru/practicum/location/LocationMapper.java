@@ -1,4 +1,4 @@
-package ru.practicum.event.location;
+package ru.practicum.location;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;

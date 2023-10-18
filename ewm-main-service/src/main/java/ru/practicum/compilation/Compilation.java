@@ -18,10 +18,10 @@ public class Compilation {
     @Column(name = "compilation_id")
     private Long id;
 
-    @Column(name = "compilation_title")
+    @Column(name = "title")
     private String title;
 
-    @Column(name = "compilation_is_pinned")
+    @Column(name = "is_pinned")
     private Boolean pinned;
 
     @ManyToMany
