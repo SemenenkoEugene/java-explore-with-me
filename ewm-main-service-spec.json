@@ -2093,7 +2093,7 @@
         },
         "description": "Сведения об ошибке"
       },
-      "CategoryDto": {
+       "CategoryDto": {
         "required": [
           "name"
         ],
