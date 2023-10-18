@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.user.validation.UserEmail;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -20,7 +21,7 @@ public class UserDto {
     @Size(min = 2, max = 250)
     private String name;
 
-    @Email
+    @UserEmail
     @NotBlank
     @Size(min = 6, max = 254)
     private String email;
