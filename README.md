@@ -1,4 +1,9 @@
 # java-explore-with-me
-Позволяет пользователям делиться информацией об интересных событиях и находить компанию для участия в них. 
+Микросервисное приложение, позволяющее пользователям делиться информацией об интересных событиях и находить компанию для участия в них.
 
-https://github.com/SemenenkoEugene/java-explore-with-me/tree/feature_comments
+Использованы: 
+- Spring Boot 2.7.9
+- JPA Hibernate
+- PostgreSQL
+- Lombok
+- Docker
