@@ -11,6 +11,7 @@
 - PostgreSQL
 - Lombok
 - Docker
+- Swagger
 
 ---
 
