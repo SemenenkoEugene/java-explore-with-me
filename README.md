@@ -78,7 +78,7 @@ API сервиса делится на три части:
 ---
 
 ## Спецификации API
-![Основной сервис](ewm-main-service-spec.json)
+[Основной сервис](ewm-main-service-spec.json)
 
-![Сервис статистики](ewm-stats-service-spec.json)
+[Сервис статистики](ewm-stats-service-spec.json)
 
