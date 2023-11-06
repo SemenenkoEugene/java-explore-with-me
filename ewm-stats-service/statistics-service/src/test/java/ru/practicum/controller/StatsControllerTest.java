@@ -115,6 +115,21 @@ class StatsControllerTest {
         verifyNoMoreInteractions(statsService);
     }
 
+    @Test
+    void createEndpointHit_blankUri() throws Exception {
+        EndpointHitDto endpointHitDto = getValidEndpointHitDto();
+        endpointHitDto.setUri("     ");
+
+        mockMvc.perform(post("/hit")
+                        .content(objectMapper.writeValueAsString(endpointHitDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+
+        verifyNoMoreInteractions(statsService);
+    }
+
     private EndpointHitDto getValidEndpointHitDto() {
         return EndpointHitDto.builder()
                 .app("TestApp")
