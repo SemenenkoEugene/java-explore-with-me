@@ -1,19 +1,24 @@
 package ru.practicum.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.practicum.EndpointHitDto;
 import ru.practicum.service.StatsServiceImpl;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = StatsController.class)
@@ -77,5 +82,31 @@ class StatsControllerTest {
                 .andExpect(status().is4xxClientError());
 
         verifyNoMoreInteractions(statsService);
+    }
+
+    @Test
+    void createEndpointHit_allValid() throws Exception {
+        EndpointHitDto endpointHitDto = getValidEndpointHitDto();
+
+        doNothing().when(statsService).saveHit(any());
+
+        mockMvc.perform(post("/hit")
+                .content(objectMapper.writeValueAsString(endpointHitDto))
+                .characterEncoding(StandardCharsets.UTF_8)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is2xxSuccessful());
+
+        verify(statsService, times(1)).saveHit(any());
+        verifyNoMoreInteractions(statsService);
+    }
+
+    private EndpointHitDto getValidEndpointHitDto() {
+        return EndpointHitDto.builder()
+                .app("TestApp")
+                .uri("TestUri")
+                .ip("0.0.0.0")
+                .hitTimestamp(LocalDateTime.now())
+                .build();
     }
 }
