@@ -1,6 +1,5 @@
 package ru.practicum.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,13 +90,28 @@ class StatsControllerTest {
         doNothing().when(statsService).saveHit(any());
 
         mockMvc.perform(post("/hit")
-                .content(objectMapper.writeValueAsString(endpointHitDto))
-                .characterEncoding(StandardCharsets.UTF_8)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
+                        .content(objectMapper.writeValueAsString(endpointHitDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful());
 
         verify(statsService, times(1)).saveHit(any());
+        verifyNoMoreInteractions(statsService);
+    }
+
+    @Test
+    void createEndpointHit_blankApp() throws Exception {
+        EndpointHitDto endpointHitDto = getValidEndpointHitDto();
+        endpointHitDto.setIp("     ");
+
+        mockMvc.perform(post("/hit")
+                        .content(objectMapper.writeValueAsString(endpointHitDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+
         verifyNoMoreInteractions(statsService);
     }
 
