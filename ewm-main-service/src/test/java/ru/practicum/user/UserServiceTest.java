@@ -48,4 +48,16 @@ class UserServiceTest {
         verifyNoMoreInteractions(userRepository);
     }
 
+    @Test
+    void createTest() {
+        UserDto userDto = UserDto.builder().build();
+
+        when(userRepository.save(any(User.class))).thenReturn(new User());
+
+        userService.create(userDto);
+
+        verify(userRepository, times(1)).save(any(User.class));
+        verifyNoMoreInteractions(userRepository);
+    }
+
 }
