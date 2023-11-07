@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -57,6 +58,20 @@ class UserServiceTest {
         userService.create(userDto);
 
         verify(userRepository, times(1)).save(any(User.class));
+        verifyNoMoreInteractions(userRepository);
+    }
+
+    @Test
+    void deleteTest() {
+        long userId = 1L;
+
+        when(userRepository.findById(eq(userId))).thenReturn(Optional.of(new User()));
+        doNothing().when(userRepository).deleteById(userId);
+
+        userService.delete(userId);
+
+        verify(userRepository, times(1)).findById(eq(userId));
+        verify(userRepository, times(1)).deleteById(eq(userId));
         verifyNoMoreInteractions(userRepository);
     }
 
