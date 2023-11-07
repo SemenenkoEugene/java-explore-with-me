@@ -9,7 +9,6 @@ import org.springframework.boot.test.json.JsonContent;
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @JsonTest
 class UserJsonTest {
@@ -33,6 +32,19 @@ class UserJsonTest {
         assertThat(jsonContent).extractingJsonPathNumberValue("$.id").isEqualTo(1);
         assertThat(jsonContent).extractingJsonPathStringValue("$.name").isEqualTo("TestName");
         assertThat(jsonContent).extractingJsonPathStringValue("$.email").isEqualTo("TestEmail");
+    }
+
+    @Test
+    void userShotDtoTest() throws IOException {
+        UserShortDto userShortDto = UserShortDto.builder()
+                .id(1L)
+                .name("TestName")
+                .build();
+
+        JsonContent<UserShortDto> jsonContent = userShortDtoJacksonTester.write(userShortDto);
+
+        assertThat(jsonContent).extractingJsonPathNumberValue("$.id").isEqualTo(1);
+        assertThat(jsonContent).extractingJsonPathStringValue("$.name").isEqualTo("TestName");
     }
 
 }
