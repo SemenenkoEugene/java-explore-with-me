@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -32,6 +33,18 @@ class UserServiceTest {
         userService.get(ids, 0, 10);
 
         verify(userRepository, times(1)).findAll(any(Pageable.class));
+        verifyNoMoreInteractions(userRepository);
+    }
+
+    @Test
+    void get_notEmptyListTest() {
+        List<Long> ids = Arrays.asList(1L, 2L, 3L);
+
+        when(userRepository.findAllByIdIn(eq(ids), any(Pageable.class))).thenReturn(new PageImpl<>(new ArrayList<>()));
+
+        userService.get(ids, 0, 10);
+
+        verify(userRepository, times(1)).findAllByIdIn(eq(ids), any(Pageable.class));
         verifyNoMoreInteractions(userRepository);
     }
 
