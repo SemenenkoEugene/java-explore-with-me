@@ -5,12 +5,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.nio.charset.StandardCharsets;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = UserControllerAdmin.class)
@@ -34,5 +38,27 @@ class UserControllerAdminTest {
 
         verify(userService, times(1)).get(any(), anyInt(), anyInt());
         verifyNoMoreInteractions(userService);
+    }
+
+    @Test
+    public void create_allValid() throws Exception {
+        when(userService.create(any())).thenReturn(null);
+
+        mockMvc.perform(post("/admin/users")
+                        .content(objectMapper.writeValueAsString(getValidUserDto()))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is2xxSuccessful());
+
+        verify(userService, times(1)).create(any());
+        verifyNoMoreInteractions(userService);
+    }
+
+    private UserDto getValidUserDto() {
+        return UserDto.builder()
+                .email("valid@mail.com")
+                .name("Valid")
+                .build();
     }
 }
