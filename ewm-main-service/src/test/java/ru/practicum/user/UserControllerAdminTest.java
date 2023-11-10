@@ -13,8 +13,7 @@ import java.nio.charset.StandardCharsets;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = UserControllerAdmin.class)
@@ -52,6 +51,17 @@ class UserControllerAdminTest {
                 .andExpect(status().is2xxSuccessful());
 
         verify(userService, times(1)).create(any());
+        verifyNoMoreInteractions(userService);
+    }
+
+    @Test
+    public void delete_allValid() throws Exception {
+        doNothing().when(userService).delete(anyLong());
+
+        mockMvc.perform(delete("/admin/users/{userId}", 0))
+                .andExpect(status().is2xxSuccessful());
+
+        verify(userService, times(1)).delete(anyLong());
         verifyNoMoreInteractions(userService);
     }
 
