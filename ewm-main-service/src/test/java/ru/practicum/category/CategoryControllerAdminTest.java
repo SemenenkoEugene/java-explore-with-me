@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -39,6 +40,21 @@ class CategoryControllerAdminTest {
                 .andExpect(status().is2xxSuccessful());
 
         verify(categoryService, times(1)).create(any());
+        verifyNoMoreInteractions(categoryService);
+    }
+
+    @Test
+    public void patch_allValid() throws Exception {
+        when(categoryService.patch(anyLong(), any())).thenReturn(null);
+
+        mockMvc.perform(patch("/admin/categories/{catId}", 0)
+                        .content(objectMapper.writeValueAsString(getValidCategoryDto()))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is2xxSuccessful());
+
+        verify(categoryService, times(1)).patch(anyLong(), any());
         verifyNoMoreInteractions(categoryService);
     }
 
