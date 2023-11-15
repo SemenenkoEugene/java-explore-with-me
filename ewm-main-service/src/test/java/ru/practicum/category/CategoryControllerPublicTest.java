@@ -21,13 +21,24 @@ class CategoryControllerPublicTest {
     private CategoryServiceImpl categoryService;
 
     @Test
-    public void getAll_getValid() throws Exception {
+    public void getAll_allValid() throws Exception {
         when(categoryService.getAll(anyInt(), anyInt())).thenReturn(null);
 
         mockMvc.perform(get("/categories"))
                 .andExpect(status().is2xxSuccessful());
 
         verify(categoryService, times(1)).getAll(anyInt(), anyInt());
+        verifyNoMoreInteractions(categoryService);
+    }
+
+    @Test
+    public void getById_allValid() throws Exception {
+        when(categoryService.getById(anyLong())).thenReturn(null);
+
+        mockMvc.perform(get("/categories/{catId}", 0))
+                .andExpect(status().is2xxSuccessful());
+
+        verify(categoryService, times(1)).getById(anyLong());
         verifyNoMoreInteractions(categoryService);
     }
 }
