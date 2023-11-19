@@ -1,6 +1,7 @@
 package ru.practicum.participationRequest;
 
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -10,6 +11,7 @@ import ru.practicum.category.Category;
 import ru.practicum.event.Event;
 import ru.practicum.event.EventRepository;
 import ru.practicum.event.EventState;
+import ru.practicum.exception.ConflictException;
 import ru.practicum.location.Location;
 import ru.practicum.user.User;
 import ru.practicum.user.UserRepository;
@@ -65,6 +67,20 @@ class ParticipationRequestServiceTest {
         verify(eventRepository, times(1)).findById(eq(1000L));
         verify(participationRequestRepository, times(1)).countByEventIdAndStatus(eq(1000L), eq(ParticipationRequestState.CONFIRMED));
         verify(participationRequestRepository, times(1)).save(any(ParticipationRequest.class));
+        verifyNoMoreInteractions(userRepository, eventRepository, participationRequestRepository);
+    }
+
+    @Test
+    void create_byInitiatorTest() {
+        when(userRepository.findById(eq(1L))).thenReturn(Optional.of(getInitiator()));
+        when(eventRepository.findById(eq(1000L))).thenReturn(Optional.of(getEvent()));
+
+        Assertions.assertThrows(ConflictException.class, () -> {
+            participationRequestService.create(1, 1000);
+        });
+
+        verify(userRepository, times(1)).findById(eq(1L));
+        verify(eventRepository, times(1)).findById(eq(1000L));
         verifyNoMoreInteractions(userRepository, eventRepository, participationRequestRepository);
     }
 
