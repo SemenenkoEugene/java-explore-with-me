@@ -1,7 +1,6 @@
 package ru.practicum.participationRequest;
 
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -75,12 +75,29 @@ class ParticipationRequestServiceTest {
         when(userRepository.findById(eq(1L))).thenReturn(Optional.of(getInitiator()));
         when(eventRepository.findById(eq(1000L))).thenReturn(Optional.of(getEvent()));
 
-        Assertions.assertThrows(ConflictException.class, () -> {
+        assertThrows(ConflictException.class, () -> {
             participationRequestService.create(1, 1000);
         });
 
         verify(userRepository, times(1)).findById(eq(1L));
         verify(eventRepository, times(1)).findById(eq(1000L));
+        verifyNoMoreInteractions(userRepository, eventRepository, participationRequestRepository);
+    }
+
+    @Test
+    void create_toNotPublishedEventTest() {
+        Event event = getEvent();
+        event.setState(EventState.PENDING);
+
+        when(userRepository.findById(eq(2L))).thenReturn(Optional.of(getParticipator()));
+        when(eventRepository.findById(eq(1000L))).thenReturn(Optional.of(event));
+
+        assertThrows(ConflictException.class, () -> {
+            participationRequestService.create(2, 1000);
+        });
+
+        verify(userRepository, times(1)).findById(eq(2L));
+        verify(eventRepository, times(1)).findById(1000L);
         verifyNoMoreInteractions(userRepository, eventRepository, participationRequestRepository);
     }
 
