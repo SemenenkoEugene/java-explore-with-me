@@ -101,6 +101,22 @@ class ParticipationRequestServiceTest {
         verifyNoMoreInteractions(userRepository, eventRepository, participationRequestRepository);
     }
 
+    @Test
+    void create_fullParticipationLimitTest() {
+        when(userRepository.findById(eq(2L))).thenReturn(Optional.of(getParticipator()));
+        when(eventRepository.findById(eq(1000L))).thenReturn(Optional.of(getEvent()));
+        when(participationRequestRepository.countByEventIdAndStatus(eq(1000L), eq(ParticipationRequestState.CONFIRMED))).thenReturn(100L);
+
+        assertThrows(ConflictException.class, () -> {
+            participationRequestService.create(2, 1000);
+        });
+
+        verify(userRepository, times(1)).findById(eq(2L));
+        verify(eventRepository, times(1)).findById(eq(1000L));
+        verify(participationRequestRepository, times(1)).countByEventIdAndStatus(eq(1000L), eq(ParticipationRequestState.CONFIRMED));
+        verifyNoMoreInteractions(userRepository, eventRepository, participationRequestRepository);
+    }
+
     private User getInitiator() {
         User user = new User();
         user.setId(1L);
