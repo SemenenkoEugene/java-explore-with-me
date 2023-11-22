@@ -117,6 +117,20 @@ class ParticipationRequestServiceTest {
         verifyNoMoreInteractions(userRepository, eventRepository, participationRequestRepository);
     }
 
+    @Test
+    void patch_allValidTest() {
+        when(userRepository.findById(eq(2L))).thenReturn(Optional.of(getParticipator()));
+        when(participationRequestRepository.findById(eq(1000L))).thenReturn(Optional.of(getParticipationRequest()));
+        when(participationRequestRepository.save(any(ParticipationRequest.class))).thenReturn(new ParticipationRequest());
+
+        participationRequestService.patch(2, 1000);
+
+        verify(userRepository, times(1)).findById(eq(2L));
+        verify(participationRequestRepository, times(1)).findById(eq(1000L));
+        verify(participationRequestRepository, times(1)).save(any(ParticipationRequest.class));
+        verifyNoMoreInteractions(userRepository, eventRepository, participationRequestRepository);
+    }
+
     private User getInitiator() {
         User user = new User();
         user.setId(1L);
