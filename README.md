@@ -15,7 +15,7 @@ The following tools were used:
 
 ---
 
-### Два сервиса:
+### Two services:
 [Main Service](#Main-Service)
 
 [Statistics Service](#Statistics-Service)
