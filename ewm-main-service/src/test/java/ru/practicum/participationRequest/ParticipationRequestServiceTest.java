@@ -11,6 +11,7 @@ import ru.practicum.event.Event;
 import ru.practicum.event.EventRepository;
 import ru.practicum.event.EventState;
 import ru.practicum.exception.ConflictException;
+import ru.practicum.exception.NotFoundException;
 import ru.practicum.location.Location;
 import ru.practicum.user.User;
 import ru.practicum.user.UserRepository;
@@ -128,6 +129,20 @@ class ParticipationRequestServiceTest {
         verify(userRepository, times(1)).findById(eq(2L));
         verify(participationRequestRepository, times(1)).findById(eq(1000L));
         verify(participationRequestRepository, times(1)).save(any(ParticipationRequest.class));
+        verifyNoMoreInteractions(userRepository, eventRepository, participationRequestRepository);
+    }
+
+    @Test
+    void patch_notRequestOwnerTest() {
+        when(userRepository.findById(eq(1L))).thenReturn(Optional.of(getInitiator()));
+        when(participationRequestRepository.findById(eq(10000L))).thenReturn(Optional.of(getParticipationRequest()));
+
+        assertThrows(NotFoundException.class, () -> {
+            participationRequestService.patch(1, 10000);
+        });
+
+        verify(userRepository, times(1)).findById(eq(1L));
+        verify(participationRequestRepository, times(1)).findById(eq(10000L));
         verifyNoMoreInteractions(userRepository, eventRepository, participationRequestRepository);
     }
 
