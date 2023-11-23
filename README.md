@@ -1,10 +1,10 @@
 # explore-with-me
 
-Микросервисное приложение, позволяющее пользователям делиться информацией об интересных событиях и находить компанию для
-участия в них.
+A microservice application that allows users to share information about interesting events and find a company to
+participate in them.
 
 ---
-Использованы следующие инструменты:
+The following tools were used:
 
 - Spring Boot 2.7.9
 - JPA Hibernate
@@ -16,75 +16,75 @@
 ---
 
 ### Два сервиса:
-[Основной сервис](#основной-сервис)
+[Main Service](#Main-Service)
 
-[Сервис статистики](#сервис-статистики)
-
----
-
-## <a name="основной-сервис"></a> Основной сервис
-
-Содержит всё необходимое для работы продукта. 
-
-API сервиса делится на три части:
-- *публичная* доступна без регистрации любому пользователю сети;
-- *закрытая* доступна только авторизованным пользователям;
-- *административная* - для администраторов сервиса;
-
-
-**Публичный API**
-
-Предоставляет возможность поиска и фильтрации событий. При этом:
-- сортировка списка событий организована либо по количеству просмотров, которое запрашивается в сервисе статистики, либо по датам событий;
-- при просмотре списка событий возвращается только краткая информация о мероприятиях;
-- просмотр подробной информации о конкретном событии настроен отдельно (через отдельный эндпоинт);
-- каждое событие должно относится к какой-то из закреплённых в приложении категорий;
-- настроена возможность получения всех имеющихся категорий и подборок событий (такие подборки составляют администраторы ресурса);
-- каждый публичный запрос для получения списка событий или полной информации о мероприятии фиксируется сервисом статистики;
-
-**Закрытый API**
-
-Закрытая часть API реализовывает возможности зарегистрированных пользователей продукта. При этом:
-- авторизованные пользователи имеют возможность добавлять в приложение новые мероприятия, редактировать их и просматривать после добавления;
-- настроена подача заявок на участие в интересующих мероприятиях;
-- создатель мероприятия имеет возможность подтверждать заявки, которые отправили другие пользователи сервиса;
-
-**Административная API**
-
-Административная часть API предоставляет возможности настройки и поддержки работы сервиса. При этом:
-- настроена возможность добавление, изменение и удаление категорий для событий;
-- имеется возможность добавлять, удалять и закреплять на главной странице подборки мероприятий;
-- имеется возможность модерации событий, размещённых пользователями, — публикация или отклонение;
-- настроено управление пользователями — добавление, активация, просмотр и удаление;
+[Statistics Service](#Statistics-Service)
 
 ---
-Схема базы данных **главного сервиса**
+
+## <a name="Main-Service"></a> Main Service
+
+Contains everything necessary for the product to work.
+
+The API of the service is divided into three parts:
+- *public* available without registration to any network user;
+- *closed* available only to authorized users;
+- *administrative* - for service administrators;
+
+
+**Public API**
+
+Provides the ability to search and filter events. At the same time:
+- sorting of the list of events is organized either by the number of views requested in the statistics service, or by the dates of events;
+- when viewing the list of events, only brief information about the events is returned;
+- viewing detailed information about a specific event is configured separately (via a separate endpoint);
+- each event must belong to one of the categories fixed in the application;
+- the ability to receive all available categories and collections of events is configured (such collections are made by resource administrators);
+- each public request for a list of events or full information about the event is recorded by the statistics service;
+
+**Closed API**
+
+The closed part of the API implements the capabilities of registered users of the product. At the same time:
+- authorized users have the opportunity to add new events to the application, edit them and view them after adding;
+- submission of applications for participation in the events of interest is set up;
+- the creator of the event has the opportunity to confirm applications sent by other users of the service;
+
+**Administrative API**
+
+The administrative part of the API provides the ability to configure and support the operation of the service. At the same time:
+- the ability to add, change and delete categories for events is configured;
+- it is possible to add, delete and pin on the main page of the collection of events;
+- there is a possibility of moderation of events posted by users — publication or rejection;
+- user management is configured — add, activate, view and delete;
+
+---
+Database schema **of the main service**
 
 ![Диаграмма](diagram_main_service.png)
 
 ---
 
-## <a name="сервис-статистики"></a> Cервис статистики
+## <a name="Statistics-Service"></a> Statistics Service
 
-- собирает информацию о количестве обращений пользователей к спискам событий 
-- собирает информацию о количестве запросов к подробной информации о событии
+- collects information about the number of user requests to event lists
+- collects information about the number of requests for detailed information about the event
 
-На основе этой информации формируется статистика о работе приложения.
+Based on this information, statistics about the operation of the application are generated.
 
-Функционал сервиса статистики содержит:
-- запись информации о том, что был обработан запрос к эндпоинту API;
-- предоставление статистики за выбранные даты по выбранному эндпоинту;
+The functionality of the statistics service contains:
+- record information that a request to the API endpoint has been processed;
+- providing statistics for selected dates for the selected endpoint;
 
 ---
 
-Cхема базы данных **сервиса статистики**
+Database schema **of the statistics service**
 
 ![Диаграмма](diagram_stats_service.png)
 
 ---
 
-## Спецификации API
-[Основной сервис](ewm-main-service-spec.json)
+## API Specifications
+[Main service](ewm-main-service-spec.json)
 
-[Сервис статистики](ewm-stats-service-spec.json)
+[Statistics Service](ewm-stats-service-spec.json)
 
