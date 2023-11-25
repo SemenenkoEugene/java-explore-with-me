@@ -13,6 +13,7 @@ import ru.practicum.util.ConstantsDate;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -59,6 +60,21 @@ class CompilationJsonTest {
 
         assertThat(jsonContent).extractingJsonPathNumberValue("$.events[0].category.id").isEqualTo(100);
         assertThat(jsonContent).extractingJsonPathStringValue("$.events[0].category.name").isEqualTo("TestCategory");
+    }
+
+    @Test
+    void compilationNewDtoTest() throws IOException {
+        CompilationNewDto compilationNewDto = CompilationNewDto.builder()
+                .title("TestCompilationNew")
+                .pinned(true)
+                .events(Arrays.asList(1L, 2L, 3L))
+                .build();
+
+        JsonContent<CompilationNewDto> jsonContent = compilationNewDtoJacksonTester.write(compilationNewDto);
+
+        assertThat(jsonContent).extractingJsonPathStringValue("$.title").isEqualTo("TestCompilationNew");
+        assertThat(jsonContent).extractingJsonPathBooleanValue("$.pinned").isEqualTo(true);
+        assertThat(jsonContent).extractingJsonPathArrayValue("$.events").containsExactly(1, 2, 3);
     }
 
     private List<EventShortDto> getEvents() {
