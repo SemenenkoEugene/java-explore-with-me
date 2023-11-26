@@ -77,6 +77,21 @@ class CompilationJsonTest {
         assertThat(jsonContent).extractingJsonPathArrayValue("$.events").containsExactly(1, 2, 3);
     }
 
+    @Test
+    void compilationUpdateRequestTest() throws Exception {
+        CompilationUpdateRequest compilationUpdateRequest = CompilationUpdateRequest.builder()
+                .title("TestCompilationUpdate")
+                .pinned(false)
+                .events(Arrays.asList(4L, 5L, 6L))
+                .build();
+
+        JsonContent<CompilationUpdateRequest> jsonContent = compilationUpdateRequestJacksonTester.write(compilationUpdateRequest);
+
+        assertThat(jsonContent).extractingJsonPathStringValue("$.title").isEqualTo("TestCompilationUpdate");
+        assertThat(jsonContent).extractingJsonPathBooleanValue("$.pinned").isEqualTo(false);
+        assertThat(jsonContent).extractingJsonPathArrayValue("$.events").containsExactly(4, 5, 6);
+    }
+
     private List<EventShortDto> getEvents() {
         return Collections.singletonList(
                 EventShortDto.builder()
