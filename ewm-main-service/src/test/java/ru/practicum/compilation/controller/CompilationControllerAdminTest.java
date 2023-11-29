@@ -7,7 +7,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import ru.practicum.compilation.CompilationUpdateRequest;
 import ru.practicum.compilation.dto.CompilationNewDto;
 import ru.practicum.compilation.service.CompilationServiceImpl;
 
@@ -15,6 +15,8 @@ import java.nio.charset.StandardCharsets;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = CompilationControllerAdmin.class)
@@ -32,7 +34,7 @@ class CompilationControllerAdminTest {
     public void create_allValid() throws Exception {
         when(compilationService.create(any())).thenReturn(null);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/admin/compilations")
+        mockMvc.perform(post("/admin/compilations")
                         .content(objectMapper.writeValueAsString(getValidCompilationNewDto()))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -42,6 +44,21 @@ class CompilationControllerAdminTest {
         verify(compilationService, times(1)).create(any());
         verifyNoMoreInteractions(compilationService);
 
+    }
+
+    @Test
+    public void patch_allValid() throws Exception {
+        when(compilationService.patch(anyLong(), any())).thenReturn(null);
+
+        mockMvc.perform(patch("/admin/compilations/{compId}", 0)
+                        .content(objectMapper.writeValueAsString(CompilationUpdateRequest.builder().build()))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is2xxSuccessful());
+
+        verify(compilationService, times(1)).patch(anyLong(), any());
+        verifyNoMoreInteractions(compilationService);
     }
 
     private CompilationNewDto getValidCompilationNewDto() {
