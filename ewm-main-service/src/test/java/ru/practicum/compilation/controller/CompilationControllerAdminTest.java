@@ -15,8 +15,7 @@ import java.nio.charset.StandardCharsets;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = CompilationControllerAdmin.class)
@@ -58,6 +57,17 @@ class CompilationControllerAdminTest {
                 .andExpect(status().is2xxSuccessful());
 
         verify(compilationService, times(1)).patch(anyLong(), any());
+        verifyNoMoreInteractions(compilationService);
+    }
+
+    @Test
+    public void delete_allValid() throws Exception {
+        doNothing().when(compilationService).delete(anyLong());
+
+        mockMvc.perform(delete("/admin/categories/{compId}", 0))
+                .andExpect(status().is2xxSuccessful());
+
+        verify(compilationService, times(1)).delete(anyLong());
         verifyNoMoreInteractions(compilationService);
     }
 
