@@ -31,4 +31,15 @@ class CompilationControllerPublicTest {
         verify(compilationService, times(1)).getAll(any(), anyInt(), anyInt());
         verifyNoMoreInteractions(compilationService);
     }
+
+    @Test
+    public void getById_allValid() throws Exception {
+        when(compilationService.getById(anyLong())).thenReturn(null);
+
+        mockMvc.perform(get("/compilations/{compId}", 0))
+                .andExpect(status().is2xxSuccessful());
+
+        verify(compilationService, times(1)).getById(anyLong());
+        verifyNoMoreInteractions(compilationService);
+    }
 }
