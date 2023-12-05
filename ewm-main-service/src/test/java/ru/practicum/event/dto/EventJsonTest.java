@@ -16,6 +16,7 @@ import ru.practicum.util.ConstantsDate;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -117,6 +118,20 @@ class EventJsonTest {
         assertThat(jsonContent).extractingJsonPathNumberValue("$.participantLimit").isEqualTo(15);
         assertThat(jsonContent).extractingJsonPathBooleanValue("$.paid").isEqualTo(true);
         assertThat(jsonContent).extractingJsonPathBooleanValue("$.requestModeration").isEqualTo(false);
+    }
+
+    @Test
+    void eventRequestStatusUpdateRequestTest() throws IOException {
+        EventRequestStatusUpdateRequest eventRequestStatusUpdateRequest = EventRequestStatusUpdateRequest.builder()
+                .requestIds(Arrays.asList(1L, 2L, 3L))
+                .status(EventRequestStatusUpdateRequest.StateAction.CONFIRMED).
+                build();
+
+        JsonContent<EventRequestStatusUpdateRequest> jsonContent =
+                eventRequestStatusUpdateRequestJacksonTester.write(eventRequestStatusUpdateRequest);
+
+        assertThat(jsonContent).extractingJsonPathArrayValue("$.requestIds").containsExactly(1, 2, 3);
+        assertThat(jsonContent).extractingJsonPathStringValue("$.status").isEqualTo("CONFIRMED");
     }
 
     private LocationDto getLocationDto() {
