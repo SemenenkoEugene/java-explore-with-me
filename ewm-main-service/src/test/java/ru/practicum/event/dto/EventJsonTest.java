@@ -134,6 +134,34 @@ class EventJsonTest {
         assertThat(jsonContent).extractingJsonPathStringValue("$.status").isEqualTo("CONFIRMED");
     }
 
+    @Test
+    void eventShortDtoTest() throws IOException {
+        EventShortDto eventShortDto = EventShortDto.builder()
+                .id(1L)
+                .initiator(getUserShortDto())
+                .category(getCategoryDto())
+                .title("TestTitle")
+                .annotation("TestAnnotation")
+                .eventDate(LocalDateTime.now())
+                .paid(true)
+                .confirmedRequests(1000L)
+                .views(10000L)
+                .build();
+
+        JsonContent<EventShortDto> jsonContent = eventShortDtoJacksonTester.write(eventShortDto);
+
+        assertThat(jsonContent).extractingJsonPathNumberValue("$.id").isEqualTo(1);
+        assertThat(jsonContent).extractingJsonPathNumberValue("$.initiator.id").isEqualTo(10);
+        assertThat(jsonContent).extractingJsonPathStringValue("$.initiator.name").isEqualTo("TestUser");
+        assertThat(jsonContent).extractingJsonPathNumberValue("$.category.id").isEqualTo(100);
+        assertThat(jsonContent).extractingJsonPathStringValue("$.category.name").isEqualTo("TestCategory");
+        assertThat(jsonContent).extractingJsonPathStringValue("$.title").isEqualTo("TestTitle");
+        assertThat(jsonContent).extractingJsonPathStringValue("$.annotation").isEqualTo("TestAnnotation");
+        assertThat(jsonContent).extractingJsonPathBooleanValue("$.paid").isEqualTo(true);
+        assertThat(jsonContent).extractingJsonPathNumberValue("$.confirmedRequests").isEqualTo(1000);
+        assertThat(jsonContent).extractingJsonPathNumberValue("$.views").isEqualTo(10000);
+    }
+
     private LocationDto getLocationDto() {
         return LocationDto.builder()
                 .lat(1000f)
