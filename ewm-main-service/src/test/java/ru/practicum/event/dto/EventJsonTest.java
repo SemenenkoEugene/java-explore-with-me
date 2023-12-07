@@ -192,6 +192,36 @@ class EventJsonTest {
         assertThat(jsonContent).extractingJsonPathStringValue("$.stateAction").isEqualTo("PUBLISH_EVENT");
     }
 
+    @Test
+    void eventUpdateUserRequestTest() throws Exception {
+        EventUpdateUserRequest eventUpdateUserRequest = EventUpdateUserRequest.builder()
+                .category(1L)
+                .location(getLocationDto())
+                .title("TestTitle")
+                .annotation("TestAnnotation")
+                .description("TestDescr")
+                .eventTimestamp(eventDateTimestamp)
+                .participantLimit(15)
+                .paid(true)
+                .requestModeration(false)
+                .stateAction(EventUpdateUserRequest.StateAction.SEND_TO_REVIEW)
+                .build();
+
+        JsonContent<EventUpdateUserRequest> jsonContent = eventUpdateUserRequestJacksonTester.write(eventUpdateUserRequest);
+
+        assertThat(jsonContent).extractingJsonPathNumberValue("$.category").isEqualTo(1);
+        assertThat(jsonContent).extractingJsonPathNumberValue("$.location.lat").isEqualTo(1000.0);
+        assertThat(jsonContent).extractingJsonPathNumberValue("$.location.lon").isEqualTo(10000.0);
+        assertThat(jsonContent).extractingJsonPathStringValue("$.title").isEqualTo("TestTitle");
+        assertThat(jsonContent).extractingJsonPathStringValue("$.annotation").isEqualTo("TestAnnotation");
+        assertThat(jsonContent).extractingJsonPathStringValue("$.description").isEqualTo("TestDescr");
+        assertThat(jsonContent).extractingJsonPathStringValue("$.eventDate").isEqualTo(eventDateTimestamp.format(ConstantsDate.getDefaultDateTimeFormatter()));
+        assertThat(jsonContent).extractingJsonPathNumberValue("$.participantLimit").isEqualTo(15);
+        assertThat(jsonContent).extractingJsonPathBooleanValue("$.paid").isEqualTo(true);
+        assertThat(jsonContent).extractingJsonPathBooleanValue("$.requestModeration").isEqualTo(false);
+        assertThat(jsonContent).extractingJsonPathStringValue("$.stateAction").isEqualTo("SEND_TO_REVIEW");
+    }
+
     private LocationDto getLocationDto() {
         return LocationDto.builder()
                 .lat(1000f)
