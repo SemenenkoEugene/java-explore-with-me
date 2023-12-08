@@ -5,11 +5,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.practicum.event.EventUpdateAdminRequest;
 import ru.practicum.event.service.EventServiceImpl;
+
+import java.nio.charset.StandardCharsets;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = EventControllerAdmin.class)
@@ -38,5 +43,18 @@ class EventControllerAdminTest {
         verifyNoMoreInteractions(eventService);
     }
 
+    @Test
+    public void patch_allValid() throws Exception {
+        when(eventService.patchByAdmin(anyLong(), any())).thenReturn(null);
 
+        mockMvc.perform(patch("/admin/events/{eventId}", 0)
+                        .content(objectMapper.writeValueAsString(EventUpdateAdminRequest.builder().build()))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is2xxSuccessful());
+
+        verify(eventService, times(1)).patchByAdmin(anyLong(), any());
+        verifyNoMoreInteractions(eventService);
+    }
 }
