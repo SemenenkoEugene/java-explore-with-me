@@ -33,4 +33,15 @@ class EventControllerPublicTest {
         );
         verifyNoMoreInteractions(eventService);
     }
+
+    @Test
+    public void getById_allValid() throws Exception {
+        when(eventService.getByIdPublic(anyLong(), any())).thenReturn(null);
+
+        mockMvc.perform(get("/events/{eventId}", 0))
+                .andExpect(status().is2xxSuccessful());
+
+        verify(eventService, times(1)).getByIdPublic(anyLong(), any());
+        verifyNoMoreInteractions(eventService);
+    }
 }
