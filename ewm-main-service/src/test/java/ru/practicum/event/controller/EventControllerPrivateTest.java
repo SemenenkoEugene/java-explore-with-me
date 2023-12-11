@@ -33,4 +33,15 @@ class EventControllerPrivateTest {
         verify(eventService, times(1)).getAllByInitiator(anyLong(), anyInt(), anyInt());
         verifyNoMoreInteractions(eventService);
     }
+
+    @Test
+    public void getById_allValid() throws Exception {
+        when(eventService.getByIdByInitiator(anyLong(), anyLong())).thenReturn(null);
+
+        mockMvc.perform(get("/users/{userId}/events/{eventId}", 0, 0))
+                .andExpect(status().is2xxSuccessful());
+
+        verify(eventService, times(1)).getByIdByInitiator(anyLong(), anyLong());
+        verifyNoMoreInteractions(eventService);
+    }
 }
