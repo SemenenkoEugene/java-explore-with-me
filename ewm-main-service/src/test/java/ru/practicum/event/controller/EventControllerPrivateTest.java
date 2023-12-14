@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.practicum.event.EventUpdateUserRequest;
 import ru.practicum.event.dto.EventNewDto;
 import ru.practicum.event.service.EventServiceImpl;
 import ru.practicum.location.LocationDto;
@@ -15,8 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = EventControllerPrivate.class)
@@ -75,6 +75,21 @@ class EventControllerPrivateTest {
                 .andExpect(status().is2xxSuccessful());
 
         verify(eventService, times(1)).create(anyLong(), any());
+        verifyNoMoreInteractions(eventService);
+    }
+
+    @Test
+    public void patchEventInfo_allValid() throws Exception {
+        when(eventService.patchByInitiator(anyLong(), anyLong(), any())).thenReturn(null);
+
+        mockMvc.perform(patch("/users/{userId}/events/{eventId}", 0, 0)
+                        .content(objectMapper.writeValueAsString(EventUpdateUserRequest.builder().build()))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is2xxSuccessful());
+
+        verify(eventService, times(1)).patchByInitiator(anyLong(), anyLong(), any());
         verifyNoMoreInteractions(eventService);
     }
 
