@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.practicum.event.EventRequestStatusUpdateRequest;
 import ru.practicum.event.EventUpdateUserRequest;
 import ru.practicum.event.dto.EventNewDto;
 import ru.practicum.event.service.EventServiceImpl;
@@ -14,6 +15,7 @@ import ru.practicum.location.LocationDto;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -93,6 +95,21 @@ class EventControllerPrivateTest {
         verifyNoMoreInteractions(eventService);
     }
 
+    @Test
+    public void patchEventRequests_allValid() throws Exception {
+        when(eventService.patchParticipationRequestsByInitiator(anyLong(), anyLong(), any())).thenReturn(null);
+
+        mockMvc.perform(patch("/users/{userId}/events/{eventId}/requests", 0, 0)
+                        .content(objectMapper.writeValueAsString(getValidEventRequestStatusUpdateRequest()))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is2xxSuccessful());
+
+        verify(eventService, times(1)).patchParticipationRequestsByInitiator(anyLong(), anyLong(), any());
+        verifyNoMoreInteractions(eventService);
+    }
+
     private EventNewDto getValidEventNewDto() {
         return EventNewDto.builder()
                 .category(0L)
@@ -108,6 +125,13 @@ class EventControllerPrivateTest {
         return LocationDto.builder()
                 .lat(0f)
                 .lon(0f)
+                .build();
+    }
+
+    private EventRequestStatusUpdateRequest getValidEventRequestStatusUpdateRequest() {
+        return EventRequestStatusUpdateRequest.builder()
+                .requestIds(new ArrayList<>())
+                .status(EventRequestStatusUpdateRequest.StateAction.CONFIRMED)
                 .build();
     }
 }
