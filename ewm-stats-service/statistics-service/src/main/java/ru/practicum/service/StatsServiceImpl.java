@@ -43,11 +43,15 @@ public class StatsServiceImpl implements StatsService {
             results = statsRepository.findNotUniqueStats(start, end, uris);
         }
         return results.stream()
-                .map(result -> ViewStatsDto.builder()
-                        .app(result.getApp())
-                        .uri(result.getUri())
-                        .hits(result.getHits())
-                        .build())
+                .map(this::buildViewStatsDto)
                 .collect(Collectors.toList());
+    }
+
+    private ViewStatsDto buildViewStatsDto(ViewStatsProjection result) {
+        return ViewStatsDto.builder()
+                .app(result.getApp())
+                .uri(result.getUri())
+                .hits(result.getHits())
+                .build();
     }
 }
