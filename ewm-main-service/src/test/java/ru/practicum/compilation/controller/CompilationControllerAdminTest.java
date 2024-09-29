@@ -64,7 +64,7 @@ class CompilationControllerAdminTest {
     public void delete_allValid() throws Exception {
         doNothing().when(compilationService).delete(anyLong());
 
-        mockMvc.perform(delete("/admin/categories/{compId}", 0))
+        mockMvc.perform(delete("/admin/compilations/{compId}", 0))
                 .andExpect(status().is2xxSuccessful());
 
         verify(compilationService, times(1)).delete(anyLong());

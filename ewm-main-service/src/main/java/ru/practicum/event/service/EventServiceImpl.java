@@ -11,7 +11,14 @@ import ru.practicum.StatsClient;
 import ru.practicum.ViewStatsDto;
 import ru.practicum.category.Category;
 import ru.practicum.category.CategoryRepository;
-import ru.practicum.event.*;
+import ru.practicum.event.Event;
+import ru.practicum.event.EventMapper;
+import ru.practicum.event.EventRepository;
+import ru.practicum.event.EventRequestStatusUpdateRequest;
+import ru.practicum.event.EventRequestStatusUpdateResult;
+import ru.practicum.event.EventState;
+import ru.practicum.event.EventUpdateAdminRequest;
+import ru.practicum.event.EventUpdateUserRequest;
 import ru.practicum.event.controller.EventControllerPublic;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventNewDto;
@@ -22,7 +29,11 @@ import ru.practicum.location.Location;
 import ru.practicum.location.LocationDto;
 import ru.practicum.location.LocationMapper;
 import ru.practicum.location.LocationRepository;
-import ru.practicum.participationRequest.*;
+import ru.practicum.participationRequest.ParticipationRequest;
+import ru.practicum.participationRequest.ParticipationRequestDto;
+import ru.practicum.participationRequest.ParticipationRequestMapper;
+import ru.practicum.participationRequest.ParticipationRequestRepository;
+import ru.practicum.participationRequest.ParticipationRequestState;
 import ru.practicum.user.User;
 import ru.practicum.user.UserRepository;
 import ru.practicum.util.ConstantsDate;
@@ -30,7 +41,11 @@ import ru.practicum.util.ConstantsDate;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,7 +60,7 @@ public class EventServiceImpl implements EventService {
     private final LocationRepository locationRepository;
     private final ParticipationRequestRepository participationRequestRepository;
 
-    @Value("${STAT_SERVER_URL:http://localhost:9090}")
+    @Value("${STATS_SERVER_URL:http://localhost:9090}")
     private String statClientUrl;
 
     private StatsClient statsClient;
@@ -150,7 +165,7 @@ public class EventServiceImpl implements EventService {
         if (onlyAvailable) {
             eventList = eventList.stream()
                     .filter(event -> event.getParticipantLimit().equals(0)
-                            || event.getParticipantLimit() < participationRequestRepository.countByEventIdAndStatus(event.getId(), ParticipationRequestState.CONFIRMED))
+                                     || event.getParticipantLimit() < participationRequestRepository.countByEventIdAndStatus(event.getId(), ParticipationRequestState.CONFIRMED))
                     .collect(Collectors.toList());
         }
 
@@ -174,7 +189,7 @@ public class EventServiceImpl implements EventService {
 
         switch (sort) {
             case EVENT_DATE:
-                Collections.sort(eventShortDtoList, Comparator.comparing(EventShortDto::getEventDate));
+                eventShortDtoList.sort(Comparator.comparing(EventShortDto::getEventDate));
                 break;
             case VIEWS:
                 Collections.sort(eventShortDtoList, Comparator.comparing(EventShortDto::getViews).reversed());
@@ -250,12 +265,12 @@ public class EventServiceImpl implements EventService {
 
         if (updateEventAdminRequest.getStateAction() != null) {
             if (updateEventAdminRequest.getStateAction().equals(EventUpdateAdminRequest.StateAction.PUBLISH_EVENT) &&
-                    !event.getState().equals(EventState.PENDING)) {
+                !event.getState().equals(EventState.PENDING)) {
                 throw new ConflictException("Cannot publish the event because it's not in the right state: " + event.getState());
             }
 
             if (updateEventAdminRequest.getStateAction().equals(EventUpdateAdminRequest.StateAction.REJECT_EVENT) &&
-                    event.getState().equals(EventState.PUBLISHED)) {
+                event.getState().equals(EventState.PUBLISHED)) {
                 throw new ConflictException("Cannot reject the event because it's not in the right state: " + event.getState());
             }
         }
@@ -268,7 +283,8 @@ public class EventServiceImpl implements EventService {
             event.setLocation(handleLocationDto(updateEventAdminRequest.getLocation()));
         }
 
-        Optional.ofNullable(updateEventAdminRequest.getTitle()).ifPresent(event::setTitle);
+        Optional.ofNullable(updateEventAdminRequest.getTitle())
+                .ifPresent(event::setTitle);
         Optional.ofNullable(updateEventAdminRequest.getAnnotation()).ifPresent(event::setAnnotation);
         Optional.ofNullable(updateEventAdminRequest.getDescription()).ifPresent(event::setDescription);
         Optional.ofNullable(updateEventAdminRequest.getEventTimestamp()).ifPresent(event::setEventDate);
@@ -303,7 +319,7 @@ public class EventServiceImpl implements EventService {
         }
 
         if (!(event.getState().equals(EventState.CANCELED) ||
-                event.getState().equals(EventState.PENDING))) {
+              event.getState().equals(EventState.PENDING))) {
             throw new ConflictException("Only pending or canceled events can be changed");
         }
 
