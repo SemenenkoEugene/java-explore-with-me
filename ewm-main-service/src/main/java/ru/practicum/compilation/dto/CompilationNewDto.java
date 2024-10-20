@@ -10,7 +10,7 @@ import javax.validation.constraints.Size;
 import java.util.List;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class CompilationNewDto {
