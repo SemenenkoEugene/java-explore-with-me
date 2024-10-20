@@ -89,6 +89,35 @@ class CompilationServiceImplTest {
 
     }
 
+    @Test
+    void create_withPinnedNull_creatingCompilationWithPinnedFalse() {
+
+        Mockito.when(eventRepository.findAllById(Mockito.any())).thenReturn(List.of(buildEvent()));
+        Mockito.when(compilationRepository.save(Mockito.any(Compilation.class))).thenReturn(COMPILATION);
+
+        final CompilationNewDto loadedCompilationNewDto = buildCompilationNew();
+        loadedCompilationNewDto.setPinned(null);
+
+        final CompilationDto actual = compilationService.create(loadedCompilationNewDto);
+
+        Assertions.assertThat(actual).isEqualTo(COMPILATION_DTO);
+        Mockito.verify(eventRepository).findAllById(List.of(1L));
+        Mockito.verify(compilationRepository).save(Mockito.any(Compilation.class));
+    }
+
+    @Test
+    void create_withEventNull_creatingCompilation() {
+
+        Mockito.when(compilationRepository.save(Mockito.any(Compilation.class))).thenReturn(COMPILATION);
+
+        final CompilationNewDto loadedCompilationNewDto = buildCompilationNew();
+        loadedCompilationNewDto.setEvents(null);
+        final CompilationDto actual = compilationService.create(loadedCompilationNewDto);
+
+        Assertions.assertThat(actual).isEqualTo(COMPILATION_DTO);
+        Mockito.verify(compilationRepository).save(Mockito.any(Compilation.class));
+    }
+
     private CompilationNewDto buildCompilationNew() {
         final CompilationNewDto compilationNewDto = new CompilationNewDto();
         compilationNewDto.setPinned(false);
