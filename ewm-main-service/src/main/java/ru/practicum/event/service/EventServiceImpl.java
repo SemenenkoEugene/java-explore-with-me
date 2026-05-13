@@ -1,5 +1,7 @@
 package ru.practicum.event.service;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -38,8 +40,6 @@ import ru.practicum.user.User;
 import ru.practicum.user.UserRepository;
 import ru.practicum.util.ConstantsDate;
 
-import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -148,7 +148,7 @@ public class EventServiceImpl implements EventService {
                                             int from,
                                             int size,
                                             HttpServletRequest request) {
-        if (categories != null && categories.size() == 1 && categories.get(0).equals(0L)) {
+        if (categories != null && categories.size() == 1 && categories.getFirst().equals(0L)) {
             categories = null;
         }
 
@@ -166,7 +166,7 @@ public class EventServiceImpl implements EventService {
             eventList = eventList.stream()
                     .filter(event -> event.getParticipantLimit().equals(0)
                                      || event.getParticipantLimit() < participationRequestRepository.countByEventIdAndStatus(event.getId(), ParticipationRequestState.CONFIRMED))
-                    .collect(Collectors.toList());
+                    .toList();
         }
 
         List<String> eventUrls = eventList.stream()
@@ -188,12 +188,8 @@ public class EventServiceImpl implements EventService {
                 .collect(Collectors.toList());
 
         switch (sort) {
-            case EVENT_DATE:
-                eventShortDtoList.sort(Comparator.comparing(EventShortDto::getEventDate));
-                break;
-            case VIEWS:
-                Collections.sort(eventShortDtoList, Comparator.comparing(EventShortDto::getViews).reversed());
-                break;
+            case EVENT_DATE -> eventShortDtoList.sort(Comparator.comparing(EventShortDto::getEventDate));
+            case VIEWS -> eventShortDtoList.sort(Comparator.comparing(EventShortDto::getViews).reversed());
         }
 
         if (from >= eventShortDtoList.size()) {
@@ -218,7 +214,7 @@ public class EventServiceImpl implements EventService {
                 ConstantsDate.getMaxDateTime().plusYears(1).format(ConstantsDate.getDefaultDateTimeFormatter()), eventUrls, true);
 
         EventFullDto dto = EventMapper.INSTANCE.toFullDto(event);
-        dto.setViews(viewStatsDtos.isEmpty() ? 0L : viewStatsDtos.get(0).getHits());
+        dto.setViews(viewStatsDtos.isEmpty() ? 0L : viewStatsDtos.getFirst().getHits());
         dto.setConfirmedRequests(participationRequestRepository.countByEventIdAndStatus(dto.getId(), ParticipationRequestState.CONFIRMED));
 
         return dto;
@@ -294,13 +290,11 @@ public class EventServiceImpl implements EventService {
 
         if (updateEventAdminRequest.getStateAction() != null) {
             switch (updateEventAdminRequest.getStateAction()) {
-                case PUBLISH_EVENT:
+                case PUBLISH_EVENT -> {
                     event.setState(EventState.PUBLISHED);
                     event.setPublishedOn(LocalDateTime.now());
-                    break;
-                case REJECT_EVENT:
-                    event.setState(EventState.CANCELED);
-                    break;
+                }
+                case REJECT_EVENT -> event.setState(EventState.CANCELED);
             }
         }
 
@@ -341,12 +335,8 @@ public class EventServiceImpl implements EventService {
 
         if (updateEventUserRequest.getStateAction() != null) {
             switch (updateEventUserRequest.getStateAction()) {
-                case SEND_TO_REVIEW:
-                    event.setState(EventState.PENDING);
-                    break;
-                case CANCEL_REVIEW:
-                    event.setState(EventState.CANCELED);
-                    break;
+                case SEND_TO_REVIEW -> event.setState(EventState.PENDING);
+                case CANCEL_REVIEW -> event.setState(EventState.CANCELED);
             }
         }
 
@@ -372,7 +362,7 @@ public class EventServiceImpl implements EventService {
 
         List<Long> notFoundIds = eventRequestStatusUpdateRequest.getRequestIds().stream()
                 .filter(requestId -> requestList.stream().noneMatch(request -> request.getId().equals(requestId)))
-                .collect(Collectors.toList());
+                .toList();
 
         if (!notFoundIds.isEmpty()) {
             throw new NotFoundException("Participation request with id=" + notFoundIds + " was not found");
@@ -395,15 +385,15 @@ public class EventServiceImpl implements EventService {
             }
 
             switch (eventRequestStatusUpdateRequest.getStatus()) {
-                case CONFIRMED:
+                case CONFIRMED -> {
                     req.setStatus(ParticipationRequestState.CONFIRMED);
                     result.getConfirmedRequests().add(ParticipationRequestMapper.INSTANCE.toDto(req));
                     confirmLimit--;
-                    break;
-                case REJECTED:
+                }
+                case REJECTED -> {
                     req.setStatus(ParticipationRequestState.REJECTED);
                     result.getRejectedRequests().add(ParticipationRequestMapper.INSTANCE.toDto(req));
-                    break;
+                }
             }
         }
 

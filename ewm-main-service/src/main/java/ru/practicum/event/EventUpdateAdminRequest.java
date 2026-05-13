@@ -2,6 +2,8 @@ package ru.practicum.event;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,8 +11,6 @@ import lombok.NoArgsConstructor;
 import ru.practicum.location.LocationDto;
 import ru.practicum.util.ConstantsDate;
 
-import javax.validation.constraints.Future;
-import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Data
