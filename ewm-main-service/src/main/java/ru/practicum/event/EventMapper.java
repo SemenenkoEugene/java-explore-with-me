@@ -18,9 +18,17 @@ public interface EventMapper {
     @Mapping(target = "eventDate", source = "dto.eventTimestamp")
     @Mapping(target = "category", source = "category")
     @Mapping(target = "location", source = "location")
+    @Mapping(target = "initiator", ignore = true)
+    @Mapping(target = "state", ignore = true)
+    @Mapping(target = "createdOn", ignore = true)
+    @Mapping(target = "publishedOn", ignore = true)
     Event fromDto(EventNewDto dto, Category category, Location location);
 
+    @Mapping(target = "confirmedRequests", ignore = true)
+    @Mapping(target = "views", ignore = true)
     EventFullDto toFullDto(Event entity);
 
+    @Mapping(target = "confirmedRequests", ignore = true)
+    @Mapping(target = "views", ignore = true)
     EventShortDto toShortDto(Event entity);
 }

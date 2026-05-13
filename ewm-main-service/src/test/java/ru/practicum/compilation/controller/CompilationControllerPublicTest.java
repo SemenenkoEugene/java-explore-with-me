@@ -3,13 +3,17 @@ package ru.practicum.compilation.controller;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.practicum.compilation.service.CompilationServiceImpl;
+import ru.practicum.compilation.service.CompilationService;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -18,8 +22,8 @@ class CompilationControllerPublicTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
-    private CompilationServiceImpl compilationService;
+    @MockitoBean
+    private CompilationService compilationService;
 
     @Test
     public void getAll_allValid() throws Exception {

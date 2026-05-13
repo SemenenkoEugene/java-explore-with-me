@@ -4,21 +4,29 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.event.EventRequestStatusUpdateRequest;
 import ru.practicum.event.EventUpdateUserRequest;
 import ru.practicum.event.dto.EventNewDto;
-import ru.practicum.event.service.EventServiceImpl;
+import ru.practicum.event.service.EventService;
 import ru.practicum.location.LocationDto;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = EventControllerPrivate.class)
@@ -29,8 +37,8 @@ class EventControllerPrivateTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
-    private EventServiceImpl eventService;
+    @MockitoBean
+    private EventService eventService;
 
     @Test
     public void getAll_allValid() throws Exception {
