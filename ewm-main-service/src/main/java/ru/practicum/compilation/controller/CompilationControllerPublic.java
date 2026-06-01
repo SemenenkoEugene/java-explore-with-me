@@ -23,15 +23,15 @@ public class CompilationControllerPublic {
     private final CompilationService compilationService;
 
     @GetMapping
-    public List<CompilationDto> getAll(@RequestParam(required = false) Boolean pinned,
-                                       @Valid @RequestParam(defaultValue = "0") @Min(0) int from,
-                                       @Valid @RequestParam(defaultValue = "10") @Min(1) int size) {
+    public List<CompilationDto> getAll(@RequestParam(required = false) final Boolean pinned,
+                                       @Valid @RequestParam(defaultValue = "0") @Min(0) final int from,
+                                       @Valid @RequestParam(defaultValue = "10") @Min(1) final int size) {
         log.debug("Получен GET запрос на просмотр подборок событий");
         return compilationService.getAll(pinned, from, size);
     }
 
     @GetMapping("/{compId}")
-    public CompilationDto getById(@PathVariable long compId) {
+    public CompilationDto getById(@PathVariable final long compId) {
         log.debug("Получен GET запрос для подборки событий по ID {}", compId);
         return compilationService.getById(compId);
     }

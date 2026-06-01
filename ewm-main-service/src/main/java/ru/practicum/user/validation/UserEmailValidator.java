@@ -11,30 +11,30 @@ public class UserEmailValidator implements ConstraintValidator<UserEmail, String
     private static final String EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@(.+)$";
 
     @Override
-    public void initialize(UserEmail userEmail) {
+    public void initialize(final UserEmail userEmail) {
     }
 
     @Override
-    public boolean isValid(String email, ConstraintValidatorContext context) {
+    public boolean isValid(final String email, final ConstraintValidatorContext context) {
         if (email == null) {
             return true;
         }
 
-        Pattern pattern = Pattern.compile(EMAIL_REGEX);
-        Matcher matcher = pattern.matcher(email);
+        final Pattern pattern = Pattern.compile(EMAIL_REGEX);
+        final Matcher matcher = pattern.matcher(email);
         if (!matcher.matches()) {
             return false;
         }
 
-        String[] parts = email.split("@");
+        final String[] parts = email.split("@");
 
-        String login = parts[0];
+        final String login = parts[0];
         if (login.length() > 64) {
             return false;
         }
 
-        String domain = parts[1];
-        String[] domainParts = domain.split("\\.");
+        final String domain = parts[1];
+        final String[] domainParts = domain.split("\\.");
         for (String domainPart : domainParts) {
             if (domainPart.length() > 63) {
                 return false;

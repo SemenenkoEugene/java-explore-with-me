@@ -1,30 +1,24 @@
 package ru.practicum.event.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ru.practicum.event.EventUpdateAdminRequest;
 import ru.practicum.event.service.EventService;
 
 import java.nio.charset.StandardCharsets;
 
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @WebMvcTest(controllers = EventControllerAdmin.class)
 class EventControllerAdminTest {
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -34,33 +28,35 @@ class EventControllerAdminTest {
     @MockitoBean
     private EventService eventService;
 
+    @SneakyThrows
     @Test
-    public void get_allValid() throws Exception {
-        when(eventService.getAllByAdmin(
-                any(), any(), any(), any(), any(), anyInt(), anyInt()
+    void get_allValid() {
+        Mockito.when(eventService.getAllByAdmin(
+                Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.anyInt(), Mockito.anyInt()
         )).thenReturn(null);
 
-        mockMvc.perform(get("/admin/events"))
-                .andExpect(status().is2xxSuccessful());
+        mockMvc.perform(MockMvcRequestBuilders.get("/admin/events"))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
 
-        verify(eventService, times(1)).getAllByAdmin(
-                any(), any(), any(), any(), any(), anyInt(), anyInt()
+        Mockito.verify(eventService).getAllByAdmin(
+                Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.anyInt(), Mockito.anyInt()
         );
-        verifyNoMoreInteractions(eventService);
+        Mockito.verifyNoMoreInteractions(eventService);
     }
 
+    @SneakyThrows
     @Test
-    public void patch_allValid() throws Exception {
-        when(eventService.patchByAdmin(anyLong(), any())).thenReturn(null);
+    void patch_allValid() {
+        Mockito.when(eventService.patchByAdmin(Mockito.anyLong(), Mockito.any())).thenReturn(null);
 
-        mockMvc.perform(patch("/admin/events/{eventId}", 0)
+        mockMvc.perform(MockMvcRequestBuilders.patch("/admin/events/{eventId}", 0)
                         .content(objectMapper.writeValueAsString(EventUpdateAdminRequest.builder().build()))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is2xxSuccessful());
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
 
-        verify(eventService, times(1)).patchByAdmin(anyLong(), any());
-        verifyNoMoreInteractions(eventService);
+        Mockito.verify(eventService).patchByAdmin(Mockito.anyLong(), Mockito.any());
+        Mockito.verifyNoMoreInteractions(eventService);
     }
 }

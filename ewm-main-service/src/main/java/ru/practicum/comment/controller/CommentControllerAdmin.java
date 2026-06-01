@@ -23,14 +23,14 @@ public class CommentControllerAdmin {
     private final CommentService commentService;
 
     @PatchMapping("/{commentId}")
-    public CommentDto patch(@PathVariable long commentId,
-                            @Valid @RequestBody CommentUpdateRequest commentUpdateRequest) {
+    public CommentDto patch(@PathVariable final long commentId,
+                            @Valid @RequestBody final CommentUpdateRequest commentUpdateRequest) {
         return commentService.patchByAdmin(commentId, commentUpdateRequest);
     }
 
     @DeleteMapping("/{commentId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable long commentId) {
+    public void delete(@PathVariable final long commentId) {
         commentService.deleteByAdmin(commentId);
     }
 }

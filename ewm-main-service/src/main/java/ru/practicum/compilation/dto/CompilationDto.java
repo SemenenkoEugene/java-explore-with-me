@@ -9,7 +9,7 @@ import ru.practicum.event.dto.EventShortDto;
 import java.util.List;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class CompilationDto {

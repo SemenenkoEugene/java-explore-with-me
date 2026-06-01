@@ -1,29 +1,20 @@
 package ru.practicum.event.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.service.EventService;
 
 import java.util.Collections;
 import java.util.List;
-
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyBoolean;
-import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.anyList;
-import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = EventControllerPublic.class)
 class EventControllerPublicTest {
@@ -34,33 +25,35 @@ class EventControllerPublicTest {
     @MockitoBean
     private EventService eventService;
 
+    @SneakyThrows
     @Test
-    public void getAll_allValid() throws Exception {
-        List<EventShortDto> events = Collections.singletonList(buildEvent());
-        when(eventService.getAllPublic(
-                anyString(), anyList(), anyBoolean(), any(), any(), anyBoolean(), any(), anyInt(), anyInt(), any(HttpServletRequest.class)
+    void getAll_allValid() {
+        final List<EventShortDto> events = Collections.singletonList(buildEvent());
+        Mockito.when(eventService.getAllPublic(
+                Mockito.anyString(), Mockito.anyList(), Mockito.anyBoolean(), Mockito.any(), Mockito.any(), Mockito.anyBoolean(), Mockito.any(), Mockito.anyInt(), Mockito.anyInt(), Mockito.any(HttpServletRequest.class)
         )).thenReturn(events);
 
-        mockMvc.perform(get("/events")
+        mockMvc.perform(MockMvcRequestBuilders.get("/events")
                         .param("paid", "true")
                         .contentType("application/json"))
-                .andExpect(status().is2xxSuccessful());
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
 
-        verify(eventService, times(1)).getAllPublic(
-                any(), any(), any(), any(), any(), anyBoolean(), any(), anyInt(), anyInt(), any()
+        Mockito.verify(eventService).getAllPublic(
+                Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.anyBoolean(), Mockito.any(), Mockito.anyInt(), Mockito.anyInt(), Mockito.any()
         );
-        verifyNoMoreInteractions(eventService);
+        Mockito.verifyNoMoreInteractions(eventService);
     }
 
+    @SneakyThrows
     @Test
-    public void getById_allValid() throws Exception {
-        when(eventService.getByIdPublic(anyLong(), any(HttpServletRequest.class))).thenReturn(null);
+    void getById_allValid() {
+        Mockito.when(eventService.getByIdPublic(Mockito.anyLong(), Mockito.any(HttpServletRequest.class))).thenReturn(null);
 
-        mockMvc.perform(get("/events/{eventId}", 0))
-                .andExpect(status().is2xxSuccessful());
+        mockMvc.perform(MockMvcRequestBuilders.get("/events/{eventId}", 0))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
 
-        verify(eventService, times(1)).getByIdPublic(anyLong(), any());
-        verifyNoMoreInteractions(eventService);
+        Mockito.verify(eventService).getByIdPublic(Mockito.anyLong(), Mockito.any());
+        Mockito.verifyNoMoreInteractions(eventService);
     }
 
     private EventShortDto buildEvent() {

@@ -1,78 +1,103 @@
 package ru.practicum.user;
 
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.Mockito;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(SpringExtension.class)
 class UserServiceTest {
+
+    private static final Long USER_ID = 1L;
+
+    private static final UserDto USER_DTO = UserDto.builder().build();
+
+    @Mock
+    private UserRepository userRepository;
+    @Mock
+    private UserMapper userMapper;
 
     @InjectMocks
     private UserServiceImpl userService;
 
-    @Mock
-    private UserRepository userRepository;
+    @BeforeEach
+    void setUp() {
+        Mockito.when(userMapper.toDto(Mockito.any())).thenReturn(USER_DTO);
+    }
+
 
     @Test
     void get_emptyListTest() {
-        List<Long> ids = new ArrayList<>();
+        final List<Long> ids = new ArrayList<>();
 
-        when(userRepository.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(new ArrayList<>()));
+        Mockito.when(userRepository.findAll(any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of()));
 
-        userService.get(ids, 0, 10);
+        final List<UserDto> actual = userService.get(ids, 0, 10);
 
-        verify(userRepository, times(1)).findAll(any(Pageable.class));
-        verifyNoMoreInteractions(userRepository);
+        Assertions.assertThat(actual).isEqualTo(List.of());
+
+        Mockito.verify(userRepository).findAll(Mockito.any(Pageable.class));
+        Mockito.verifyNoMoreInteractions(userRepository);
     }
 
     @Test
     void get_notEmptyListTest() {
-        List<Long> ids = Arrays.asList(1L, 2L, 3L);
+        final List<Long> ids = List.of(1L, 2L, 3L);
 
-        when(userRepository.findAllByIdIn(eq(ids), any(Pageable.class))).thenReturn(new PageImpl<>(new ArrayList<>()));
+        Mockito.when(userRepository.findAllByIdIn(Mockito.anyList(), Mockito.any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(buildUser())));
 
-        userService.get(ids, 0, 10);
+        final List<UserDto> actual = userService.get(ids, 0, 10);
 
-        verify(userRepository, times(1)).findAllByIdIn(eq(ids), any(Pageable.class));
-        verifyNoMoreInteractions(userRepository);
+        Assertions.assertThat(actual).isEqualTo(List.of(USER_DTO));
+
+        Mockito.verify(userRepository).findAllByIdIn(Mockito.eq(ids), Mockito.any(Pageable.class));
+        Mockito.verifyNoMoreInteractions(userRepository);
     }
 
     @Test
     void createTest() {
-        UserDto userDto = UserDto.builder().build();
+        Mockito.when(userMapper.fromDto(Mockito.any())).thenReturn(buildUser());
+        Mockito.when(userRepository.save(Mockito.any())).thenReturn(buildUser());
 
-        when(userRepository.save(any(User.class))).thenReturn(new User());
+        final UserDto actual = userService.create(USER_DTO);
 
-        userService.create(userDto);
+        Assertions.assertThat(actual).isEqualTo(USER_DTO);
 
-        verify(userRepository, times(1)).save(any(User.class));
-        verifyNoMoreInteractions(userRepository);
+        Mockito.verify(userRepository).save(Mockito.any(User.class));
+        Mockito.verifyNoMoreInteractions(userRepository);
     }
 
     @Test
     void deleteTest() {
-        long userId = 1L;
+        Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.of(buildUser()));
+        Mockito.doNothing().when(userRepository).deleteById(USER_ID);
 
-        when(userRepository.findById(eq(userId))).thenReturn(Optional.of(new User()));
-        doNothing().when(userRepository).deleteById(userId);
+        userService.delete(USER_ID);
 
-        userService.delete(userId);
+        Mockito.verify(userRepository).findById(Mockito.eq(USER_ID));
+        Mockito.verify(userRepository).deleteById(Mockito.eq(USER_ID));
+        Mockito.verifyNoMoreInteractions(userRepository);
+    }
 
-        verify(userRepository, times(1)).findById(eq(userId));
-        verify(userRepository, times(1)).deleteById(eq(userId));
-        verifyNoMoreInteractions(userRepository);
+    private User buildUser() {
+        final User user = new User();
+        user.setId(USER_ID);
+
+        return user;
     }
 
 }

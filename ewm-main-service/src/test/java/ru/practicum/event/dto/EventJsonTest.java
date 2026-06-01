@@ -1,5 +1,7 @@
 package ru.practicum.event.dto;
 
+import lombok.SneakyThrows;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
@@ -14,11 +16,8 @@ import ru.practicum.location.LocationDto;
 import ru.practicum.user.UserShortDto;
 import ru.practicum.util.ConstantsDate;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @JsonTest
 class EventJsonTest {
@@ -45,9 +44,10 @@ class EventJsonTest {
     @Autowired
     private JacksonTester<EventUpdateUserRequest> eventUpdateUserRequestJacksonTester;
 
+    @SneakyThrows
     @Test
-    void eventFullDtoTest() throws IOException {
-        EventFullDto eventFullDto = EventFullDto.builder()
+    void eventFullDtoTest() {
+        final EventFullDto eventFullDto = EventFullDto.builder()
                 .id(1L)
                 .initiator(getUserShortDto())
                 .category(getCategoryDto())
@@ -66,35 +66,36 @@ class EventJsonTest {
                 .views(1500L)
                 .build();
 
-        JsonContent<EventFullDto> jsonContent = eventFullDtoJacksonTester.write(eventFullDto);
+        final JsonContent<EventFullDto> jsonContent = eventFullDtoJacksonTester.write(eventFullDto);
 
-        assertThat(jsonContent).extractingJsonPathNumberValue("$.id").isEqualTo(1);
-        assertThat(jsonContent).extractingJsonPathNumberValue("$.initiator.id").isEqualTo(10);
-        assertThat(jsonContent).extractingJsonPathStringValue("$.initiator.name").isEqualTo("TestUser");
-        assertThat(jsonContent).extractingJsonPathNumberValue("$.category.id").isEqualTo(100);
-        assertThat(jsonContent).extractingJsonPathStringValue("$.category.name").isEqualTo("TestCategory");
-        assertThat(jsonContent).extractingJsonPathNumberValue("$.location.lat").isEqualTo(1000.0);
-        assertThat(jsonContent).extractingJsonPathNumberValue("$.location.lon").isEqualTo(10000.0);
-        assertThat(jsonContent).extractingJsonPathStringValue("$.title").isEqualTo("TestTitle");
-        assertThat(jsonContent).extractingJsonPathStringValue("$.annotation").isEqualTo("TestAnnotation");
-        assertThat(jsonContent).extractingJsonPathStringValue("$.description").isEqualTo("TestDescr");
-        assertThat(jsonContent).extractingJsonPathStringValue("$.state").isEqualTo("PENDING");
-        assertThat(jsonContent).extractingJsonPathStringValue("$.eventDate")
+        Assertions.assertThat(jsonContent).extractingJsonPathNumberValue("$.id").isEqualTo(1);
+        Assertions.assertThat(jsonContent).extractingJsonPathNumberValue("$.initiator.id").isEqualTo(10);
+        Assertions.assertThat(jsonContent).extractingJsonPathStringValue("$.initiator.name").isEqualTo("TestUser");
+        Assertions.assertThat(jsonContent).extractingJsonPathNumberValue("$.category.id").isEqualTo(100);
+        Assertions.assertThat(jsonContent).extractingJsonPathStringValue("$.category.name").isEqualTo("TestCategory");
+        Assertions.assertThat(jsonContent).extractingJsonPathNumberValue("$.location.lat").isEqualTo(1000.0);
+        Assertions.assertThat(jsonContent).extractingJsonPathNumberValue("$.location.lon").isEqualTo(10000.0);
+        Assertions.assertThat(jsonContent).extractingJsonPathStringValue("$.title").isEqualTo("TestTitle");
+        Assertions.assertThat(jsonContent).extractingJsonPathStringValue("$.annotation").isEqualTo("TestAnnotation");
+        Assertions.assertThat(jsonContent).extractingJsonPathStringValue("$.description").isEqualTo("TestDescr");
+        Assertions.assertThat(jsonContent).extractingJsonPathStringValue("$.state").isEqualTo("PENDING");
+        Assertions.assertThat(jsonContent).extractingJsonPathStringValue("$.eventDate")
                 .isEqualTo(eventDateTimestamp.format(ConstantsDate.getDefaultDateTimeFormatter()));
-        assertThat(jsonContent).extractingJsonPathStringValue("$.createdOn")
+        Assertions.assertThat(jsonContent).extractingJsonPathStringValue("$.createdOn")
                 .isEqualTo(createdOnTimestamp.format(ConstantsDate.getDefaultDateTimeFormatter()));
-        assertThat(jsonContent).extractingJsonPathStringValue("$.publishedOn")
+        Assertions.assertThat(jsonContent).extractingJsonPathStringValue("$.publishedOn")
                 .isEqualTo(publishedOnTimestamp.format(ConstantsDate.getDefaultDateTimeFormatter()));
-        assertThat(jsonContent).extractingJsonPathNumberValue("$.participantLimit").isEqualTo(15);
-        assertThat(jsonContent).extractingJsonPathBooleanValue("$.paid").isEqualTo(true);
-        assertThat(jsonContent).extractingJsonPathBooleanValue("$.requestModeration").isEqualTo(false);
-        assertThat(jsonContent).extractingJsonPathNumberValue("$.confirmedRequests").isEqualTo(150);
-        assertThat(jsonContent).extractingJsonPathNumberValue("$.views").isEqualTo(1500);
+        Assertions.assertThat(jsonContent).extractingJsonPathNumberValue("$.participantLimit").isEqualTo(15);
+        Assertions.assertThat(jsonContent).extractingJsonPathBooleanValue("$.paid").isEqualTo(true);
+        Assertions.assertThat(jsonContent).extractingJsonPathBooleanValue("$.requestModeration").isEqualTo(false);
+        Assertions.assertThat(jsonContent).extractingJsonPathNumberValue("$.confirmedRequests").isEqualTo(150);
+        Assertions.assertThat(jsonContent).extractingJsonPathNumberValue("$.views").isEqualTo(1500);
     }
 
+    @SneakyThrows
     @Test
-    void eventNewDtoTest() throws IOException {
-        EventNewDto eventNewDto = EventNewDto.builder()
+    void eventNewDtoTest() {
+        final EventNewDto eventNewDto = EventNewDto.builder()
                 .category(1L)
                 .location(getLocationDto())
                 .title("TestTitle")
@@ -106,37 +107,39 @@ class EventJsonTest {
                 .requestModeration(false)
                 .build();
 
-        JsonContent<EventNewDto> jsonContent = eventNewDtoJacksonTester.write(eventNewDto);
+        final JsonContent<EventNewDto> jsonContent = eventNewDtoJacksonTester.write(eventNewDto);
 
-        assertThat(jsonContent).extractingJsonPathNumberValue("$.category").isEqualTo(1);
-        assertThat(jsonContent).extractingJsonPathNumberValue("$.location.lat").isEqualTo(1000.0);
-        assertThat(jsonContent).extractingJsonPathNumberValue("$.location.lon").isEqualTo(10000.0);
-        assertThat(jsonContent).extractingJsonPathStringValue("$.title").isEqualTo("TestTitle");
-        assertThat(jsonContent).extractingJsonPathStringValue("$.annotation").isEqualTo("TestAnnotation");
-        assertThat(jsonContent).extractingJsonPathStringValue("$.description").isEqualTo("TestDescr");
-        assertThat(jsonContent).extractingJsonPathStringValue("$.eventDate").isEqualTo(eventDateTimestamp.format(ConstantsDate.getDefaultDateTimeFormatter()));
-        assertThat(jsonContent).extractingJsonPathNumberValue("$.participantLimit").isEqualTo(15);
-        assertThat(jsonContent).extractingJsonPathBooleanValue("$.paid").isEqualTo(true);
-        assertThat(jsonContent).extractingJsonPathBooleanValue("$.requestModeration").isEqualTo(false);
+        Assertions.assertThat(jsonContent).extractingJsonPathNumberValue("$.category").isEqualTo(1);
+        Assertions.assertThat(jsonContent).extractingJsonPathNumberValue("$.location.lat").isEqualTo(1000.0);
+        Assertions.assertThat(jsonContent).extractingJsonPathNumberValue("$.location.lon").isEqualTo(10000.0);
+        Assertions.assertThat(jsonContent).extractingJsonPathStringValue("$.title").isEqualTo("TestTitle");
+        Assertions.assertThat(jsonContent).extractingJsonPathStringValue("$.annotation").isEqualTo("TestAnnotation");
+        Assertions.assertThat(jsonContent).extractingJsonPathStringValue("$.description").isEqualTo("TestDescr");
+        Assertions.assertThat(jsonContent).extractingJsonPathStringValue("$.eventDate").isEqualTo(eventDateTimestamp.format(ConstantsDate.getDefaultDateTimeFormatter()));
+        Assertions.assertThat(jsonContent).extractingJsonPathNumberValue("$.participantLimit").isEqualTo(15);
+        Assertions.assertThat(jsonContent).extractingJsonPathBooleanValue("$.paid").isEqualTo(true);
+        Assertions.assertThat(jsonContent).extractingJsonPathBooleanValue("$.requestModeration").isEqualTo(false);
     }
 
+    @SneakyThrows
     @Test
-    void eventRequestStatusUpdateRequestTest() throws IOException {
-        EventRequestStatusUpdateRequest eventRequestStatusUpdateRequest = EventRequestStatusUpdateRequest.builder()
+    void eventRequestStatusUpdateRequestTest() {
+        final EventRequestStatusUpdateRequest eventRequestStatusUpdateRequest = EventRequestStatusUpdateRequest.builder()
                 .requestIds(Arrays.asList(1L, 2L, 3L))
-                .status(EventRequestStatusUpdateRequest.StateAction.CONFIRMED).
-                build();
+                .status(EventRequestStatusUpdateRequest.StateAction.CONFIRMED)
+                .build();
 
-        JsonContent<EventRequestStatusUpdateRequest> jsonContent =
+        final JsonContent<EventRequestStatusUpdateRequest> jsonContent =
                 eventRequestStatusUpdateRequestJacksonTester.write(eventRequestStatusUpdateRequest);
 
-        assertThat(jsonContent).extractingJsonPathArrayValue("$.requestIds").containsExactly(1, 2, 3);
-        assertThat(jsonContent).extractingJsonPathStringValue("$.status").isEqualTo("CONFIRMED");
+        Assertions.assertThat(jsonContent).extractingJsonPathArrayValue("$.requestIds").containsExactly(1, 2, 3);
+        Assertions.assertThat(jsonContent).extractingJsonPathStringValue("$.status").isEqualTo("CONFIRMED");
     }
 
+    @SneakyThrows
     @Test
-    void eventShortDtoTest() throws IOException {
-        EventShortDto eventShortDto = EventShortDto.builder()
+    void eventShortDtoTest() {
+        final EventShortDto eventShortDto = EventShortDto.builder()
                 .id(1L)
                 .initiator(getUserShortDto())
                 .category(getCategoryDto())
@@ -148,23 +151,24 @@ class EventJsonTest {
                 .views(10000L)
                 .build();
 
-        JsonContent<EventShortDto> jsonContent = eventShortDtoJacksonTester.write(eventShortDto);
+        final JsonContent<EventShortDto> jsonContent = eventShortDtoJacksonTester.write(eventShortDto);
 
-        assertThat(jsonContent).extractingJsonPathNumberValue("$.id").isEqualTo(1);
-        assertThat(jsonContent).extractingJsonPathNumberValue("$.initiator.id").isEqualTo(10);
-        assertThat(jsonContent).extractingJsonPathStringValue("$.initiator.name").isEqualTo("TestUser");
-        assertThat(jsonContent).extractingJsonPathNumberValue("$.category.id").isEqualTo(100);
-        assertThat(jsonContent).extractingJsonPathStringValue("$.category.name").isEqualTo("TestCategory");
-        assertThat(jsonContent).extractingJsonPathStringValue("$.title").isEqualTo("TestTitle");
-        assertThat(jsonContent).extractingJsonPathStringValue("$.annotation").isEqualTo("TestAnnotation");
-        assertThat(jsonContent).extractingJsonPathBooleanValue("$.paid").isEqualTo(true);
-        assertThat(jsonContent).extractingJsonPathNumberValue("$.confirmedRequests").isEqualTo(1000);
-        assertThat(jsonContent).extractingJsonPathNumberValue("$.views").isEqualTo(10000);
+        Assertions.assertThat(jsonContent).extractingJsonPathNumberValue("$.id").isEqualTo(1);
+        Assertions.assertThat(jsonContent).extractingJsonPathNumberValue("$.initiator.id").isEqualTo(10);
+        Assertions.assertThat(jsonContent).extractingJsonPathStringValue("$.initiator.name").isEqualTo("TestUser");
+        Assertions.assertThat(jsonContent).extractingJsonPathNumberValue("$.category.id").isEqualTo(100);
+        Assertions.assertThat(jsonContent).extractingJsonPathStringValue("$.category.name").isEqualTo("TestCategory");
+        Assertions.assertThat(jsonContent).extractingJsonPathStringValue("$.title").isEqualTo("TestTitle");
+        Assertions.assertThat(jsonContent).extractingJsonPathStringValue("$.annotation").isEqualTo("TestAnnotation");
+        Assertions.assertThat(jsonContent).extractingJsonPathBooleanValue("$.paid").isEqualTo(true);
+        Assertions.assertThat(jsonContent).extractingJsonPathNumberValue("$.confirmedRequests").isEqualTo(1000);
+        Assertions.assertThat(jsonContent).extractingJsonPathNumberValue("$.views").isEqualTo(10000);
     }
 
+    @SneakyThrows
     @Test
-    void eventUpdateAdminRequestTest() throws Exception {
-        EventUpdateAdminRequest eventUpdateAdminRequest = EventUpdateAdminRequest.builder()
+    void eventUpdateAdminRequestTest() {
+        final EventUpdateAdminRequest eventUpdateAdminRequest = EventUpdateAdminRequest.builder()
                 .category(1L)
                 .location(getLocationDto())
                 .title("TestTitle")
@@ -177,24 +181,25 @@ class EventJsonTest {
                 .stateAction(EventUpdateAdminRequest.StateAction.PUBLISH_EVENT)
                 .build();
 
-        JsonContent<EventUpdateAdminRequest> jsonContent = eventUpdateAdminRequestJacksonTester.write(eventUpdateAdminRequest);
+        final JsonContent<EventUpdateAdminRequest> jsonContent = eventUpdateAdminRequestJacksonTester.write(eventUpdateAdminRequest);
 
-        assertThat(jsonContent).extractingJsonPathNumberValue("$.category").isEqualTo(1);
-        assertThat(jsonContent).extractingJsonPathNumberValue("$.location.lat").isEqualTo(1000.0);
-        assertThat(jsonContent).extractingJsonPathNumberValue("$.location.lon").isEqualTo(10000.0);
-        assertThat(jsonContent).extractingJsonPathStringValue("$.title").isEqualTo("TestTitle");
-        assertThat(jsonContent).extractingJsonPathStringValue("$.annotation").isEqualTo("TestAnnotation");
-        assertThat(jsonContent).extractingJsonPathStringValue("$.description").isEqualTo("TestDescr");
-        assertThat(jsonContent).extractingJsonPathStringValue("$.eventDate").isEqualTo(eventDateTimestamp.format(ConstantsDate.getDefaultDateTimeFormatter()));
-        assertThat(jsonContent).extractingJsonPathNumberValue("$.participantLimit").isEqualTo(15);
-        assertThat(jsonContent).extractingJsonPathBooleanValue("$.paid").isEqualTo(true);
-        assertThat(jsonContent).extractingJsonPathBooleanValue("$.requestModeration").isEqualTo(false);
-        assertThat(jsonContent).extractingJsonPathStringValue("$.stateAction").isEqualTo("PUBLISH_EVENT");
+        Assertions.assertThat(jsonContent).extractingJsonPathNumberValue("$.category").isEqualTo(1);
+        Assertions.assertThat(jsonContent).extractingJsonPathNumberValue("$.location.lat").isEqualTo(1000.0);
+        Assertions.assertThat(jsonContent).extractingJsonPathNumberValue("$.location.lon").isEqualTo(10000.0);
+        Assertions.assertThat(jsonContent).extractingJsonPathStringValue("$.title").isEqualTo("TestTitle");
+        Assertions.assertThat(jsonContent).extractingJsonPathStringValue("$.annotation").isEqualTo("TestAnnotation");
+        Assertions.assertThat(jsonContent).extractingJsonPathStringValue("$.description").isEqualTo("TestDescr");
+        Assertions.assertThat(jsonContent).extractingJsonPathStringValue("$.eventDate").isEqualTo(eventDateTimestamp.format(ConstantsDate.getDefaultDateTimeFormatter()));
+        Assertions.assertThat(jsonContent).extractingJsonPathNumberValue("$.participantLimit").isEqualTo(15);
+        Assertions.assertThat(jsonContent).extractingJsonPathBooleanValue("$.paid").isEqualTo(true);
+        Assertions.assertThat(jsonContent).extractingJsonPathBooleanValue("$.requestModeration").isEqualTo(false);
+        Assertions.assertThat(jsonContent).extractingJsonPathStringValue("$.stateAction").isEqualTo("PUBLISH_EVENT");
     }
 
+    @SneakyThrows
     @Test
-    void eventUpdateUserRequestTest() throws Exception {
-        EventUpdateUserRequest eventUpdateUserRequest = EventUpdateUserRequest.builder()
+    void eventUpdateUserRequestTest() {
+        final EventUpdateUserRequest eventUpdateUserRequest = EventUpdateUserRequest.builder()
                 .category(1L)
                 .location(getLocationDto())
                 .title("TestTitle")
@@ -207,19 +212,19 @@ class EventJsonTest {
                 .stateAction(EventUpdateUserRequest.StateAction.SEND_TO_REVIEW)
                 .build();
 
-        JsonContent<EventUpdateUserRequest> jsonContent = eventUpdateUserRequestJacksonTester.write(eventUpdateUserRequest);
+        final JsonContent<EventUpdateUserRequest> jsonContent = eventUpdateUserRequestJacksonTester.write(eventUpdateUserRequest);
 
-        assertThat(jsonContent).extractingJsonPathNumberValue("$.category").isEqualTo(1);
-        assertThat(jsonContent).extractingJsonPathNumberValue("$.location.lat").isEqualTo(1000.0);
-        assertThat(jsonContent).extractingJsonPathNumberValue("$.location.lon").isEqualTo(10000.0);
-        assertThat(jsonContent).extractingJsonPathStringValue("$.title").isEqualTo("TestTitle");
-        assertThat(jsonContent).extractingJsonPathStringValue("$.annotation").isEqualTo("TestAnnotation");
-        assertThat(jsonContent).extractingJsonPathStringValue("$.description").isEqualTo("TestDescr");
-        assertThat(jsonContent).extractingJsonPathStringValue("$.eventDate").isEqualTo(eventDateTimestamp.format(ConstantsDate.getDefaultDateTimeFormatter()));
-        assertThat(jsonContent).extractingJsonPathNumberValue("$.participantLimit").isEqualTo(15);
-        assertThat(jsonContent).extractingJsonPathBooleanValue("$.paid").isEqualTo(true);
-        assertThat(jsonContent).extractingJsonPathBooleanValue("$.requestModeration").isEqualTo(false);
-        assertThat(jsonContent).extractingJsonPathStringValue("$.stateAction").isEqualTo("SEND_TO_REVIEW");
+        Assertions.assertThat(jsonContent).extractingJsonPathNumberValue("$.category").isEqualTo(1);
+        Assertions.assertThat(jsonContent).extractingJsonPathNumberValue("$.location.lat").isEqualTo(1000.0);
+        Assertions.assertThat(jsonContent).extractingJsonPathNumberValue("$.location.lon").isEqualTo(10000.0);
+        Assertions.assertThat(jsonContent).extractingJsonPathStringValue("$.title").isEqualTo("TestTitle");
+        Assertions.assertThat(jsonContent).extractingJsonPathStringValue("$.annotation").isEqualTo("TestAnnotation");
+        Assertions.assertThat(jsonContent).extractingJsonPathStringValue("$.description").isEqualTo("TestDescr");
+        Assertions.assertThat(jsonContent).extractingJsonPathStringValue("$.eventDate").isEqualTo(eventDateTimestamp.format(ConstantsDate.getDefaultDateTimeFormatter()));
+        Assertions.assertThat(jsonContent).extractingJsonPathNumberValue("$.participantLimit").isEqualTo(15);
+        Assertions.assertThat(jsonContent).extractingJsonPathBooleanValue("$.paid").isEqualTo(true);
+        Assertions.assertThat(jsonContent).extractingJsonPathBooleanValue("$.requestModeration").isEqualTo(false);
+        Assertions.assertThat(jsonContent).extractingJsonPathStringValue("$.stateAction").isEqualTo("SEND_TO_REVIEW");
     }
 
     private LocationDto getLocationDto() {

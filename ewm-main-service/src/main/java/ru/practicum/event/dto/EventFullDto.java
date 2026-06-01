@@ -12,7 +12,7 @@ import ru.practicum.util.ConstantsDate;
 import java.time.LocalDateTime;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 public class EventFullDto {
 
     private Long id;
