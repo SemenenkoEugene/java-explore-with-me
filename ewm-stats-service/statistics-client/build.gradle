@@ -1,0 +1,8 @@
+dependencies {
+    api project(':ewm-stats-service:statistics-dto')
+    api 'org.springframework.boot:spring-boot-starter-webflux'
+}
+
+base {
+    archivesName = 'stats-client'
+}

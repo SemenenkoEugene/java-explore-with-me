@@ -15,7 +15,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ApiError handleNotFoundException(NotFoundException e) {
+    public ApiError handleNotFoundException(final NotFoundException e) {
         return ApiError.builder()
                 .status(HttpStatus.NOT_FOUND)
                 .reason("The required object was not found.")
@@ -26,7 +26,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiError handleBadRequestException(BadRequestException e) {
+    public ApiError handleBadRequestException(final BadRequestException e) {
         return ApiError.builder()
                 .status(HttpStatus.BAD_REQUEST)
                 .reason("Incorrectly made request.")
@@ -37,7 +37,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ApiError handleConflictException(ConflictException e) {
+    public ApiError handleConflictException(final ConflictException e) {
         return ApiError.builder()
                 .status(HttpStatus.FORBIDDEN)
                 .reason("For the requested operation the conditions are not met.")
@@ -48,20 +48,20 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiError handleBindException(BindException e) {
+    public ApiError handleBindException(final BindException e) {
         return ApiError.builder()
                 .status(HttpStatus.BAD_REQUEST)
                 .reason("Incorrectly made request.")
                 .message("Field: " + e.getFieldError().getField() +
-                        ". Error: " + e.getFieldError().getDefaultMessage() +
-                        ". Value: " + e.getFieldError().getRejectedValue())
+                         ". Error: " + e.getFieldError().getDefaultMessage() +
+                         ". Value: " + e.getFieldError().getRejectedValue())
                 .errorTimestamp(LocalDateTime.now())
                 .build();
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiError handleBindException(MissingServletRequestParameterException e) {
+    public ApiError handleBindException(final MissingServletRequestParameterException e) {
         return ApiError.builder()
                 .status(HttpStatus.BAD_REQUEST)
                 .reason("Incorrectly made request.")
@@ -72,7 +72,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ApiError handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+    public ApiError handleDataIntegrityViolationException(final DataIntegrityViolationException e) {
         return ApiError.builder()
                 .status(HttpStatus.CONFLICT)
                 .reason("Integrity constraint has been violated.")
@@ -83,7 +83,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ApiError handleUnhandled(Exception e) {
+    public ApiError handleUnhandled(final Exception e) {
         return ApiError.builder()
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .reason("Internal server error.")
@@ -95,7 +95,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ApiError handleForbiddenException(ForbiddenException e) {
+    public ApiError handleForbiddenException(final ForbiddenException e) {
         return ApiError.builder()
                 .status(HttpStatus.FORBIDDEN)
                 .reason("The required action forbidden.")

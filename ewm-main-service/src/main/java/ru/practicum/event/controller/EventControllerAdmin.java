@@ -29,20 +29,20 @@ public class EventControllerAdmin {
     private final EventService eventService;
 
     @GetMapping()
-    public List<EventFullDto> get(@RequestParam(required = false) List<Long> users,
-                                  @RequestParam(required = false) List<EventState> states,
-                                  @RequestParam(required = false) List<Long> categories,
-                                  @RequestParam(required = false) @DateTimeFormat(pattern = ConstantsDate.DATE_FORMAT) LocalDateTime rangeStart,
-                                  @RequestParam(required = false) @DateTimeFormat(pattern = ConstantsDate.DATE_FORMAT) LocalDateTime rangeEnd,
-                                  @Valid @RequestParam(defaultValue = "0") @Min(0) int from,
-                                  @Valid @RequestParam(defaultValue = "10") @Min(1) int size) {
+    public List<EventFullDto> get(@RequestParam(required = false) final List<Long> users,
+                                  @RequestParam(required = false) final List<EventState> states,
+                                  @RequestParam(required = false) final List<Long> categories,
+                                  @RequestParam(required = false) @DateTimeFormat(pattern = ConstantsDate.DATE_FORMAT) final LocalDateTime rangeStart,
+                                  @RequestParam(required = false) @DateTimeFormat(pattern = ConstantsDate.DATE_FORMAT) final LocalDateTime rangeEnd,
+                                  @Valid @RequestParam(defaultValue = "0") @Min(0) final int from,
+                                  @Valid @RequestParam(defaultValue = "10") @Min(1) final int size) {
         log.debug("Получен GET запрос на просмотр событий по фильтрам");
         return eventService.getAllByAdmin(users, states, categories, rangeStart, rangeEnd, from, size);
     }
 
     @PatchMapping("/{eventId}")
-    public EventFullDto patch(@PathVariable long eventId,
-                              @Valid @RequestBody EventUpdateAdminRequest updateEventAdminRequest) {
+    public EventFullDto patch(@PathVariable final long eventId,
+                              @Valid @RequestBody final EventUpdateAdminRequest updateEventAdminRequest) {
         log.debug("Получен PATCH запрос на обновление события с ID {} администратором", eventId);
         return eventService.patchByAdmin(eventId, updateEventAdminRequest);
     }

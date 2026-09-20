@@ -1,60 +1,70 @@
 package ru.practicum.category;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.exception.NotFoundException;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
+
     private final CategoryRepository categoryRepository;
+    private final CategoryMapper categoryMapper;
 
     @Transactional(readOnly = true)
     @Override
-    public List<CategoryDto> getAll(int from, int size) {
-        return categoryRepository.findAll(PageRequest.of(from, size)).getContent().stream()
-                .map(CategoryMapper.INSTANCE::toDto)
-                .collect(Collectors.toList());
+    public List<CategoryDto> getAll(final int from, final int size) {
+        final Page<Category> categoryPage = categoryRepository.findAll(PageRequest.of(from, size));
+
+        return Optional.of(categoryPage.getContent()).orElseGet(List::of).stream()
+                .map(categoryMapper::toDto)
+                .toList();
     }
 
     @Transactional(readOnly = true)
     @Override
-    public CategoryDto getById(long catId) {
-        return CategoryMapper.INSTANCE.toDto(findById(catId));
+    public CategoryDto getById(final long catId) {
+        final Category category = findById(catId);
+
+        return categoryMapper.toDto(category);
     }
 
     @Transactional
     @Override
-    public CategoryDto create(CategoryDto categoryDto) {
-        Category category = CategoryMapper.INSTANCE.fromDto(categoryDto);
-        Category saveCategory = categoryRepository.save(category);
-        return CategoryMapper.INSTANCE.toDto(saveCategory);
+    public CategoryDto create(final CategoryDto categoryDto) {
+        final Category category = categoryMapper.fromDto(categoryDto);
+        final Category saveCategory = categoryRepository.save(category);
+        return categoryMapper.toDto(saveCategory);
     }
 
     @Override
-    public CategoryDto patch(long catId, CategoryDto categoryDto) {
-        Category category = findById(catId);
+    public CategoryDto patch(final long catId, final CategoryDto categoryDto) {
+        final Category category = findById(catId);
 
-        Optional.ofNullable(categoryDto.getName()).ifPresent(category::setName);
-        Category saveCategory = categoryRepository.save(category);
+        if (Objects.nonNull(categoryDto.getName())) {
+            category.setName(categoryDto.getName());
+        }
 
-        return CategoryMapper.INSTANCE.toDto(saveCategory);
+        final Category saveCategory = categoryRepository.save(category);
+
+        return categoryMapper.toDto(saveCategory);
     }
 
     @Override
-    public void delete(long catId) {
-        findById(catId);
-        categoryRepository.deleteById(catId);
+    public void delete(final long catId) {
+        final Category category = findById(catId);
+        categoryRepository.deleteById(category.getId());
     }
 
-    private Category findById(long id) {
+    private Category findById(final long id) {
         return categoryRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Category with id=" + id + " was not found"));
+                .orElseThrow(() -> new NotFoundException("Category with id=%d was not found".formatted(id)));
     }
 }

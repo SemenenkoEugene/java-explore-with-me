@@ -1,14 +1,12 @@
 package ru.practicum.category;
 
+import lombok.SneakyThrows;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
-
-import java.io.IOException;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @JsonTest
 class CategoryJsonTest {
@@ -16,16 +14,17 @@ class CategoryJsonTest {
     @Autowired
     private JacksonTester<CategoryDto> categoryDtoJacksonTester;
 
+    @SneakyThrows
     @Test
-    void categoryDtoTest() throws IOException {
-        CategoryDto categoryDto = CategoryDto.builder()
+    void categoryDtoTest() {
+        final CategoryDto categoryDto = CategoryDto.builder()
                 .id(1L)
                 .name("TestCategory")
                 .build();
 
-        JsonContent<CategoryDto> jsonContent = categoryDtoJacksonTester.write(categoryDto);
+        final JsonContent<CategoryDto> jsonContent = categoryDtoJacksonTester.write(categoryDto);
 
-        assertThat(jsonContent).extractingJsonPathNumberValue("$.id").isEqualTo(1);
-        assertThat(jsonContent).extractingJsonPathStringValue("$.name").isEqualTo("TestCategory");
+        Assertions.assertThat(jsonContent).extractingJsonPathNumberValue("$.id").isEqualTo(1);
+        Assertions.assertThat(jsonContent).extractingJsonPathStringValue("$.name").isEqualTo("TestCategory");
     }
 }

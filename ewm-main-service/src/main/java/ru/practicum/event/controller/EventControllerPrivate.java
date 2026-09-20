@@ -33,47 +33,47 @@ public class EventControllerPrivate {
     private final EventService eventService;
 
     @GetMapping()
-    public List<EventShortDto> getAll(@PathVariable long userId,
-                                      @Valid @RequestParam(defaultValue = "0") @Min(0) int from,
-                                      @Valid @RequestParam(defaultValue = "10") @Min(1) int size) {
+    public List<EventShortDto> getAll(@PathVariable final long userId,
+                                      @Valid @RequestParam(defaultValue = "0") @Min(0) final int from,
+                                      @Valid @RequestParam(defaultValue = "10") @Min(1) final int size) {
         log.debug("Получен GET запрос на просмотр событий, добавленных пользователем с ID {}", userId);
         return eventService.getAllByInitiator(userId, from, size);
     }
 
     @GetMapping("/{eventId}")
-    public EventFullDto getById(@PathVariable long userId,
-                                @PathVariable long eventId) {
+    public EventFullDto getById(@PathVariable final long userId,
+                                @PathVariable final long eventId) {
         log.debug("Получен GET запрос на просмотр события {}, добавленного пользователем с ID {}", eventId, userId);
         return eventService.getByIdByInitiator(userId, eventId);
     }
 
     @GetMapping("/{eventId}/requests")
-    public List<ParticipationRequestDto> getParticipationRequestsByInitiator(@PathVariable long userId,
-                                                                             @PathVariable long eventId) {
+    public List<ParticipationRequestDto> getParticipationRequestsByInitiator(@PathVariable final long userId,
+                                                                             @PathVariable final long eventId) {
         log.debug("Получен GET запрос от инициатора {} события {} на просмотр запросов на участие в событии", userId, eventId);
         return eventService.getParticipationRequestsByInitiator(userId, eventId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public EventFullDto create(@PathVariable long userId,
-                               @Valid @RequestBody EventNewDto eventNewDto) {
+    public EventFullDto create(@PathVariable final long userId,
+                               @Valid @RequestBody final EventNewDto eventNewDto) {
         log.debug("Получен POST запрос на добавление категории {} от пользователя с ID {}", eventNewDto.toString(), userId);
         return eventService.create(userId, eventNewDto);
     }
 
     @PatchMapping("/{eventId}")
-    public EventFullDto patchEventInfo(@PathVariable long userId,
-                                       @PathVariable long eventId,
-                                       @Valid @RequestBody EventUpdateUserRequest updateEventUserRequest) {
+    public EventFullDto patchEventInfo(@PathVariable final long userId,
+                                       @PathVariable final long eventId,
+                                       @Valid @RequestBody final EventUpdateUserRequest updateEventUserRequest) {
         log.debug("Получен PATCH запрос на обновление события {} пользователем с ID {}", eventId, userId);
         return eventService.patchByInitiator(userId, eventId, updateEventUserRequest);
     }
 
     @PatchMapping("/{eventId}/requests")
-    public EventRequestStatusUpdateResult patchEventRequests(@PathVariable long userId,
-                                                             @PathVariable long eventId,
-                                                             @Valid @RequestBody EventRequestStatusUpdateRequest eventRequestStatusUpdateRequest) {
+    public EventRequestStatusUpdateResult patchEventRequests(@PathVariable final long userId,
+                                                             @PathVariable final long eventId,
+                                                             @Valid @RequestBody final EventRequestStatusUpdateRequest eventRequestStatusUpdateRequest) {
         log.debug("Получен PATCH запрос на обновление статусов запросов на участие в событии {}", eventId);
         return eventService.patchParticipationRequestsByInitiator(userId, eventId, eventRequestStatusUpdateRequest);
     }

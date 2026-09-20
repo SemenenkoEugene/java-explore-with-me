@@ -25,22 +25,22 @@ public class CommentControllerPrivate {
 
     @PostMapping("/{eventId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public CommentDto create(@PathVariable long userId,
-                             @PathVariable long eventId,
-                             @Valid @RequestBody CommentNewDto commentNewDto) {
+    public CommentDto create(@PathVariable final long userId,
+                             @PathVariable final long eventId,
+                             @Valid @RequestBody final CommentNewDto commentNewDto) {
         return commentService.create(userId, eventId, commentNewDto);
     }
 
     @PatchMapping("/{commentId}")
-    public CommentDto patch(@PathVariable long userId,
-                            @PathVariable long commentId,
-                            @Valid @RequestBody CommentUpdateRequest commentUpdateRequest) {
+    public CommentDto patch(@PathVariable final long userId,
+                            @PathVariable final long commentId,
+                            @Valid @RequestBody final CommentUpdateRequest commentUpdateRequest) {
         return commentService.patchByUser(userId, commentId, commentUpdateRequest);
     }
 
     @DeleteMapping("/{commentId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable long userId, @PathVariable long commentId) {
+    public void delete(@PathVariable final long userId, @PathVariable final long commentId) {
         commentService.deleteByUser(userId, commentId);
     }
 }

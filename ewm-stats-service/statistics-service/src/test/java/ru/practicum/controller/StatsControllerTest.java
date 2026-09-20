@@ -1,30 +1,22 @@
 package ru.practicum.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ru.practicum.EndpointHitDto;
 import ru.practicum.service.StatsService;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.anyBoolean;
-import static org.mockito.Mockito.anyList;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = StatsController.class)
 class StatsControllerTest {
@@ -38,132 +30,139 @@ class StatsControllerTest {
     @MockitoBean
     private StatsService statsService;
 
+    @SneakyThrows
     @Test
-    void getStats_allValid() throws Exception {
-        String start = LocalDateTime.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        String end = LocalDateTime.now().plusDays(2).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        String uris = "Uri1, Uri2";
-        String unique = "false";
+    void getStats_allValid() {
+        final String start = LocalDateTime.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        final String end = LocalDateTime.now().plusDays(2).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        final String uris = "Uri1, Uri2";
+        final String unique = "false";
 
-        when(statsService.findStats(any(), any(), anyList(), anyBoolean())).thenReturn(null);
+        Mockito.when(statsService.findStats(Mockito.any(), Mockito.any(), Mockito.anyList(), Mockito.anyBoolean())).thenReturn(null);
 
-        mockMvc.perform(get("/stats")
+        mockMvc.perform(MockMvcRequestBuilders.get("/stats")
                         .param("start", start)
                         .param("end", end)
                         .param("uris", uris)
                         .param("unique", unique))
-                .andExpect(status().is2xxSuccessful());
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
 
-        verify(statsService, times(1)).findStats(any(), any(), anyList(), anyBoolean());
-        verifyNoMoreInteractions(statsService);
+        Mockito.verify(statsService).findStats(Mockito.any(), Mockito.any(), Mockito.anyList(), Mockito.anyBoolean());
+        Mockito.verifyNoMoreInteractions(statsService);
     }
 
+    @SneakyThrows
     @Test
-    void getStats_onlyRequiredValid() throws Exception {
-        String start = LocalDateTime.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        String end = LocalDateTime.now().plusDays(2).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    void getStats_onlyRequiredValid() {
+        final String start = LocalDateTime.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        final String end = LocalDateTime.now().plusDays(2).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
-        when(statsService.findStats(any(), any(), anyList(), anyBoolean())).thenReturn(null);
+        Mockito.when(statsService.findStats(Mockito.any(), Mockito.any(), Mockito.anyList(), Mockito.anyBoolean())).thenReturn(null);
 
-        mockMvc.perform(get("/stats")
+        mockMvc.perform(MockMvcRequestBuilders.get("/stats")
                         .param("start", start)
                         .param("end", end))
-                .andExpect(status().is2xxSuccessful());
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
 
-        verify(statsService, times(1))
-                .findStats(LocalDateTime.now().plusDays(1).withNano(0),
-                        LocalDateTime.now().plusDays(2).withNano(0),
-                        null,
-                        false);
-        verifyNoMoreInteractions(statsService);
+        Mockito.verify(statsService).findStats(LocalDateTime.now().plusDays(1).withNano(0),
+                LocalDateTime.now().plusDays(2).withNano(0),
+                null,
+                false);
+        Mockito.verifyNoMoreInteractions(statsService);
     }
 
+    @SneakyThrows
     @Test
-    void getStats_noRequiredParam() throws Exception {
-        String start = LocalDateTime.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    void getStats_noRequiredParam() {
+        final String start = LocalDateTime.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
-        mockMvc.perform(get("/stats")
+        mockMvc.perform(MockMvcRequestBuilders.get("/stats")
                         .param("start", start))
-                .andExpect(status().is4xxClientError());
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
 
-        verifyNoMoreInteractions(statsService);
+        Mockito.verifyNoMoreInteractions(statsService);
     }
 
+    @SneakyThrows
     @Test
-    void createEndpointHit_allValid() throws Exception {
-        EndpointHitDto endpointHitDto = getValidEndpointHitDto();
+    void createEndpointHit_allValid() {
+        final EndpointHitDto endpointHitDto = getValidEndpointHitDto();
 
-        doNothing().when(statsService).saveHit(any());
+        Mockito.doNothing().when(statsService).saveHit(Mockito.any());
 
-        mockMvc.perform(post("/hit")
+        mockMvc.perform(MockMvcRequestBuilders.post("/hit")
                         .content(objectMapper.writeValueAsString(endpointHitDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is2xxSuccessful());
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
 
-        verify(statsService, times(1)).saveHit(any());
-        verifyNoMoreInteractions(statsService);
+        Mockito.verify(statsService).saveHit(Mockito.any());
+        Mockito.verifyNoMoreInteractions(statsService);
     }
 
+    @SneakyThrows
     @Test
-    void createEndpointHit_blankApp() throws Exception {
-        EndpointHitDto endpointHitDto = getValidEndpointHitDto();
+    void createEndpointHit_blankApp() {
+        final EndpointHitDto endpointHitDto = getValidEndpointHitDto();
         endpointHitDto.setIp("     ");
 
-        mockMvc.perform(post("/hit")
+        mockMvc.perform(MockMvcRequestBuilders.post("/hit")
                         .content(objectMapper.writeValueAsString(endpointHitDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError());
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
 
-        verifyNoMoreInteractions(statsService);
+        Mockito.verifyNoMoreInteractions(statsService);
     }
 
+    @SneakyThrows
     @Test
-    void createEndpointHit_blankUri() throws Exception {
-        EndpointHitDto endpointHitDto = getValidEndpointHitDto();
+    void createEndpointHit_blankUri() {
+        final EndpointHitDto endpointHitDto = getValidEndpointHitDto();
         endpointHitDto.setUri("     ");
 
-        mockMvc.perform(post("/hit")
+        mockMvc.perform(MockMvcRequestBuilders.post("/hit")
                         .content(objectMapper.writeValueAsString(endpointHitDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError());
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
 
-        verifyNoMoreInteractions(statsService);
+        Mockito.verifyNoMoreInteractions(statsService);
     }
 
+    @SneakyThrows
     @Test
-    void createEndpointHit_blankIp() throws Exception {
-        EndpointHitDto endpointHitDto = getValidEndpointHitDto();
+    void createEndpointHit_blankIp() {
+        final EndpointHitDto endpointHitDto = getValidEndpointHitDto();
         endpointHitDto.setIp("     ");
 
-        mockMvc.perform(post("/hit")
+        mockMvc.perform(MockMvcRequestBuilders.post("/hit")
                         .content(objectMapper.writeValueAsString(endpointHitDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError());
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
 
-        verifyNoMoreInteractions(statsService);
+        Mockito.verifyNoMoreInteractions(statsService);
     }
 
+    @SneakyThrows
     @Test
-    void createEndpointHit_nullTimestamp() throws Exception {
-        EndpointHitDto endpointHitDto = getValidEndpointHitDto();
+    void createEndpointHit_nullTimestamp() {
+        final EndpointHitDto endpointHitDto = getValidEndpointHitDto();
         endpointHitDto.setHitTimestamp(null);
 
-        mockMvc.perform(post("/hit")
+        mockMvc.perform(MockMvcRequestBuilders.post("/hit")
                         .content(objectMapper.writeValueAsString(endpointHitDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError());
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
 
-        verifyNoMoreInteractions(statsService);
+        Mockito.verifyNoMoreInteractions(statsService);
     }
 
     private EndpointHitDto getValidEndpointHitDto() {

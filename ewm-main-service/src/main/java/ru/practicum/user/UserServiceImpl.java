@@ -1,6 +1,7 @@
 package ru.practicum.user;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -9,46 +10,49 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.exception.NotFoundException;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     @Transactional(readOnly = true)
     @Override
-    public List<UserDto> get(List<Long> ids, int from, int size) {
-        Pageable pageable = PageRequest.of(from, size);
-        Page<User> page;
-        if (ids != null && !ids.isEmpty()) {
+    public List<UserDto> get(final List<Long> ids, final int from, final int size) {
+        final Pageable pageable = PageRequest.of(from, size);
+
+        final Page<User> page;
+
+        if (ObjectUtils.isNotEmpty(ids)) {
             page = userRepository.findAllByIdIn(ids, pageable);
         } else {
             page = userRepository.findAll(pageable);
         }
 
         return page.getContent().stream()
-                .map(UserMapper.INSTANCE::toDto)
-                .collect(Collectors.toList());
+                .map(userMapper::toDto)
+                .toList();
     }
 
     @Transactional
     @Override
-    public UserDto create(UserDto userDto) {
-        User user = UserMapper.INSTANCE.fromDto(userDto);
-        User saveUser = userRepository.save(user);
-        return UserMapper.INSTANCE.toDto(saveUser);
+    public UserDto create(final UserDto userDto) {
+        final User user = userMapper.fromDto(userDto);
+        final User saveUser = userRepository.save(user);
+        return userMapper.toDto(saveUser);
     }
 
     @Transactional
     @Override
-    public void delete(long userId) {
-        findById(userId);
-        userRepository.deleteById(userId);
+    public void delete(final long userId) {
+        final User user = findById(userId);
+        userRepository.deleteById(user.getId());
     }
 
-    private void findById(long id) {
-        userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("User with id=" + id + "was not found"));
+    private User findById(final long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("User with id=%d was not found".formatted(id)));
     }
 }

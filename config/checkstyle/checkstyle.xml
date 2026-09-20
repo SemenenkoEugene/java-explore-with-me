@@ -60,6 +60,9 @@
 		</module>
 		<module name="UpperEll"/>
 		<module name="ModifierOrder"/>
+		<module name="FinalParameters"/>
+		<module name="ParameterAssignment"/>
+		<module name="FinalLocalVariable"/>
 		<module name="EmptyLineSeparator">
 			<property name="tokens"
 					  value="IMPORT,CLASS_DEF,ENUM_DEF,INTERFACE_DEF,CTOR_DEF,METHOD_DEF,STATIC_INIT,INSTANCE_INIT,VARIABLE_DEF"/>
@@ -251,7 +254,7 @@
 	<!--	<module name="NewlineAtEndOfFile"/>-->
 	<module name="SuppressWarningsFilter"/>
 	<module name="SuppressionFilter">
-		<property name="file" value="suppressions.xml"/>
+		<property name="file" value="${config_loc}/suppressions.xml"/>
 		<property name="optional" value="false"/>
 	</module>
 </module>

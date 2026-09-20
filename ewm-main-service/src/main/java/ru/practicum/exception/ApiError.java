@@ -10,7 +10,7 @@ import ru.practicum.util.ConstantsDate;
 import java.time.LocalDateTime;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 public class ApiError {
     private HttpStatus status;
     private String reason;
