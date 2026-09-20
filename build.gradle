@@ -1,0 +1,137 @@
+import com.github.spotbugs.snom.Confidence
+import com.github.spotbugs.snom.Effort
+
+plugins {
+    id 'base'
+    id 'org.springframework.boot' version '3.5.11' apply false
+    id 'com.github.spotbugs' version '6.1.13' apply false
+}
+
+allprojects {
+    group = 'ru.practicum'
+    version = '0.0.1-SNAPSHOT'
+}
+
+def javaProjects = subprojects.findAll { it.name != 'ewm-stats-service' }
+
+configure(javaProjects) {
+    apply plugin: 'java-library'
+    apply plugin: 'checkstyle'
+
+    repositories {
+        mavenCentral()
+    }
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)
+        }
+    }
+
+    dependencies {
+        api platform('org.springframework.boot:spring-boot-dependencies:3.5.11')
+        annotationProcessor platform('org.springframework.boot:spring-boot-dependencies:3.5.11')
+        testAnnotationProcessor platform('org.springframework.boot:spring-boot-dependencies:3.5.11')
+
+        api 'org.springframework.boot:spring-boot-starter-validation'
+        api 'org.springframework.boot:spring-boot-starter-web'
+        api 'com.fasterxml.jackson.core:jackson-annotations'
+        api 'org.apache.commons:commons-collections4:4.4'
+        api 'org.apache.commons:commons-lang3:3.18.0'
+
+        compileOnly 'org.projectlombok:lombok:1.18.38'
+        annotationProcessor 'org.projectlombok:lombok:1.18.38'
+        testCompileOnly 'org.projectlombok:lombok:1.18.38'
+        testAnnotationProcessor 'org.projectlombok:lombok:1.18.38'
+
+        testImplementation 'org.junit.jupiter:junit-jupiter'
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+        options.release = 21
+        options.compilerArgs.add('-parameters')
+    }
+
+    tasks.withType(Test).configureEach {
+        useJUnitPlatform()
+        systemProperty 'spring.profiles.active', 'test'
+        testLogging {
+            events 'failed', 'skipped'
+        }
+    }
+
+    checkstyle {
+        toolVersion = '9.3'
+        configDirectory = rootProject.layout.projectDirectory.dir('config/checkstyle')
+        showViolations = true
+    }
+
+    if (providers.gradleProperty('quality').isPresent()) {
+        apply plugin: 'com.github.spotbugs'
+        spotbugs {
+            toolVersion = '4.9.0'
+            effort = Effort.valueOf('MAX')
+            reportLevel = Confidence.valueOf('HIGH')
+        }
+        tasks.named('spotbugsTest') {
+            enabled = false
+        }
+    }
+
+    if (providers.gradleProperty('coverage').isPresent()) {
+        apply plugin: 'jacoco'
+        jacoco {
+            toolVersion = '0.8.12'
+        }
+        tasks.named('jacocoTestReport') {
+            dependsOn tasks.named('test')
+            reports {
+                xml.required = true
+                html.required = true
+            }
+        }
+        tasks.named('jacocoTestCoverageVerification') {
+            dependsOn tasks.named('test')
+            violationRules {
+                rule {
+                    ['INSTRUCTION': 0.01, 'LINE': 0.7, 'BRANCH': 0.6,
+                     'COMPLEXITY': 0.7, 'METHOD': 0.7].each { metric, ratio ->
+                        limit {
+                            counter = metric
+                            value = 'COVEREDRATIO'
+                            minimum = ratio
+                        }
+                    }
+                    limit {
+                        counter = 'CLASS'
+                        value = 'MISSEDCOUNT'
+                        maximum = 1
+                    }
+                }
+            }
+        }
+        tasks.named('check') {
+            dependsOn tasks.named('jacocoTestReport'), tasks.named('jacocoTestCoverageVerification')
+        }
+    }
+}
+
+tasks.named('clean') {
+    dependsOn javaProjects.collect { it.tasks.named('clean') }
+}
+
+tasks.named('assemble') {
+    dependsOn javaProjects.collect { it.tasks.named('assemble') }
+}
+
+tasks.named('check') {
+    dependsOn javaProjects.collect { it.tasks.named('check') }
+}
+
+tasks.named('wrapper') {
+    gradleVersion = '8.14.4'
+    distributionType = Wrapper.DistributionType.BIN
+    distributionSha256Sum = 'f1771298a70f6db5a29daf62378c4e18a17fc33c9ba6b14362e0cdf40610380d'
+}

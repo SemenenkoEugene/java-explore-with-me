@@ -1,8 +1,5 @@
 HELP.md
-target/
-!.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+.gradle/
 
 ### STS ###
 .apt_generated
@@ -18,6 +15,11 @@ target/
 *.iws
 *.iml
 *.ipr
+/amplicode.xml
+
+### Local copies of the tracked JSON API specifications ###
+/ewm-main-service-spec.yaml
+/ewm-stats-service-spec.yml
 
 ### NetBeans ###
 /nbproject/private/

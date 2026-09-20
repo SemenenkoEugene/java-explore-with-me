@@ -1,0 +1,6 @@
+rootProject.name = 'explore-with-me'
+
+include 'ewm-main-service'
+include 'ewm-stats-service:statistics-client'
+include 'ewm-stats-service:statistics-dto'
+include 'ewm-stats-service:statistics-service'

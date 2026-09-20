@@ -6,12 +6,71 @@ participate in them.
 ---
 The following tools were used:
 
-- Spring Boot 2.7.9
+- Java 21
+- Spring Boot 3.5.11
+- Gradle 8.14.4 (Wrapper)
 - JPA Hibernate
 - PostgreSQL
 - Lombok
 - Docker
 - Swagger
+
+## Build and run
+
+Install JDK 21 and set `JAVA_HOME`. The Gradle Wrapper downloads the pinned Gradle
+distribution automatically; no separate Gradle installation is needed.
+
+```shell
+./gradlew clean build
+```
+
+On Windows (PowerShell):
+
+```powershell
+.\gradlew.bat clean build
+```
+
+The build compiles all four Java modules, runs JUnit tests with the `test` Spring
+profile, and checks main and test sources with Checkstyle. Tests use H2 and mocks;
+PostgreSQL is not required for the build.
+
+Executable applications:
+
+- `ewm-main-service/build/libs/ewm-service.jar`
+- `ewm-stats-service/statistics-service/build/libs/stats-server.jar`
+
+The `statistics-client` and `statistics-dto` modules produce library JARs in their
+respective `build/libs` directories. Test reports are in each module's
+`build/reports/tests/test/index.html`.
+
+Optional checks:
+
+```shell
+./gradlew check -Pquality
+./gradlew check -Pcoverage
+./gradlew jacocoTestReport -Pcoverage
+```
+
+`quality` enables SpotBugs (maximum effort, high confidence). `coverage` enables
+JaCoCo reports and the existing coverage thresholds; it can fail if current tests
+do not meet those thresholds. Use `jacocoTestReport -Pcoverage` to generate reports
+without enforcing thresholds. PMD was only declared as an unused plugin configuration
+in the previous build and is not part of the Gradle build.
+
+After building the JARs, start both services and their databases:
+
+```shell
+docker compose up --build
+```
+
+To run one service directly with an available PostgreSQL database:
+
+```shell
+./gradlew :ewm-main-service:bootRun
+./gradlew :ewm-stats-service:statistics-service:bootRun
+```
+
+Import the root `settings.gradle` as a Gradle project in your IDE and select JDK 21.
 
 ---
 
