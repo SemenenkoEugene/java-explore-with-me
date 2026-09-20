@@ -29,16 +29,16 @@ public class EventControllerPublic {
     private final EventService eventService;
 
     @GetMapping()
-    public List<EventShortDto> getAll(@RequestParam(defaultValue = "") String text,
-                                      @RequestParam(required = false) List<Long> categories,
-                                      @RequestParam(required = false) Boolean paid,
-                                      @RequestParam(required = false) @DateTimeFormat(pattern = ConstantsDate.DATE_FORMAT) LocalDateTime rangeStart,
-                                      @RequestParam(required = false) @DateTimeFormat(pattern = ConstantsDate.DATE_FORMAT) LocalDateTime rangeEnd,
-                                      @RequestParam(defaultValue = "false") boolean onlyAvailable,
-                                      @RequestParam(defaultValue = "VIEWS") SortMode sort,
-                                      @Valid @RequestParam(defaultValue = "0") @Min(0) int from,
-                                      @Valid @RequestParam(defaultValue = "10") @Min(1) int size,
-                                      HttpServletRequest request) {
+    public List<EventShortDto> getAll(@RequestParam(defaultValue = "") final String text,
+                                      @RequestParam(required = false) final List<Long> categories,
+                                      @RequestParam(required = false) final Boolean paid,
+                                      @RequestParam(required = false) @DateTimeFormat(pattern = ConstantsDate.DATE_FORMAT) final LocalDateTime rangeStart,
+                                      @RequestParam(required = false) @DateTimeFormat(pattern = ConstantsDate.DATE_FORMAT) final LocalDateTime rangeEnd,
+                                      @RequestParam(defaultValue = "false") final boolean onlyAvailable,
+                                      @RequestParam(defaultValue = "VIEWS") final SortMode sort,
+                                      @Valid @RequestParam(defaultValue = "0") @Min(0) final int from,
+                                      @Valid @RequestParam(defaultValue = "10") @Min(1) final int size,
+                                      final HttpServletRequest request) {
         if (rangeStart != null && rangeEnd != null && rangeStart.isAfter(rangeEnd)) {
             throw new BadRequestException("Start date must be before end date");
         }
@@ -47,8 +47,8 @@ public class EventControllerPublic {
     }
 
     @GetMapping("{eventId}")
-    public EventFullDto getById(@PathVariable long eventId,
-                                HttpServletRequest request) {
+    public EventFullDto getById(@PathVariable final long eventId,
+                                final HttpServletRequest request) {
 
         log.debug("Получен GET запрос на просмотр события по ID {}", eventId);
         return eventService.getByIdPublic(eventId, request);

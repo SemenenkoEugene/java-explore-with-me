@@ -1,21 +1,15 @@
 package ru.practicum.compilation.controller;
 
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ru.practicum.compilation.service.CompilationService;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = CompilationControllerPublic.class)
 class CompilationControllerPublicTest {
@@ -25,25 +19,27 @@ class CompilationControllerPublicTest {
     @MockitoBean
     private CompilationService compilationService;
 
+    @SneakyThrows
     @Test
-    public void getAll_allValid() throws Exception {
-        when(compilationService.getAll(any(), anyInt(), anyInt())).thenReturn(null);
+    public void getAll_allValid() {
+        Mockito.when(compilationService.getAll(Mockito.any(), Mockito.anyInt(), Mockito.anyInt())).thenReturn(null);
 
-        mockMvc.perform(get("/compilations"))
-                .andExpect(status().is2xxSuccessful());
+        mockMvc.perform(MockMvcRequestBuilders.get("/compilations"))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
 
-        verify(compilationService, times(1)).getAll(any(), anyInt(), anyInt());
-        verifyNoMoreInteractions(compilationService);
+        Mockito.verify(compilationService).getAll(Mockito.any(), Mockito.anyInt(), Mockito.anyInt());
+        Mockito.verifyNoMoreInteractions(compilationService);
     }
 
+    @SneakyThrows
     @Test
-    public void getById_allValid() throws Exception {
-        when(compilationService.getById(anyLong())).thenReturn(null);
+    public void getById_allValid() {
+        Mockito.when(compilationService.getById(Mockito.anyLong())).thenReturn(null);
 
-        mockMvc.perform(get("/compilations/{compId}", 0))
-                .andExpect(status().is2xxSuccessful());
+        mockMvc.perform(MockMvcRequestBuilders.get("/compilations/{compId}", 0))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
 
-        verify(compilationService, times(1)).getById(anyLong());
-        verifyNoMoreInteractions(compilationService);
+        Mockito.verify(compilationService).getById(Mockito.anyLong());
+        Mockito.verifyNoMoreInteractions(compilationService);
     }
 }

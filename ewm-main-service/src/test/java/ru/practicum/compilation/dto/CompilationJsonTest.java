@@ -1,5 +1,7 @@
 package ru.practicum.compilation.dto;
 
+import lombok.SneakyThrows;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
@@ -11,13 +13,10 @@ import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.user.UserShortDto;
 import ru.practicum.util.ConstantsDate;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @JsonTest
 class CompilationJsonTest {
@@ -32,64 +31,67 @@ class CompilationJsonTest {
     @Autowired
     private JacksonTester<CompilationUpdateRequest> compilationUpdateRequestJacksonTester;
 
+    @SneakyThrows
     @Test
-    void compilationDtoTest() throws IOException {
-        CompilationDto compilationDto = CompilationDto.builder()
+    void compilationDtoTest() {
+        final CompilationDto compilationDto = CompilationDto.builder()
                 .id(1L)
                 .title("TestCompilation")
                 .pinned(true)
                 .events(getEvents())
                 .build();
 
-        JsonContent<CompilationDto> jsonContent = compilationDtoJacksonTester.write(compilationDto);
+        final JsonContent<CompilationDto> jsonContent = compilationDtoJacksonTester.write(compilationDto);
 
-        assertThat(jsonContent).extractingJsonPathNumberValue("$.id").isEqualTo(1);
-        assertThat(jsonContent).extractingJsonPathStringValue("$.title").isEqualTo("TestCompilation");
-        assertThat(jsonContent).extractingJsonPathBooleanValue("$.pinned").isEqualTo(true);
+        Assertions.assertThat(jsonContent).extractingJsonPathNumberValue("$.id").isEqualTo(1);
+        Assertions.assertThat(jsonContent).extractingJsonPathStringValue("$.title").isEqualTo("TestCompilation");
+        Assertions.assertThat(jsonContent).extractingJsonPathBooleanValue("$.pinned").isEqualTo(true);
 
-        assertThat(jsonContent).extractingJsonPathNumberValue("$.events[0].id").isEqualTo(1);
-        assertThat(jsonContent).extractingJsonPathStringValue("$.events[0].title").isEqualTo("TestEvent");
-        assertThat(jsonContent).extractingJsonPathStringValue("$.events[0].annotation").isEqualTo("TestAnnotation");
-        assertThat(jsonContent).extractingJsonPathStringValue("$.events[0].eventDate").isEqualTo(testTimestamp.format(ConstantsDate.getDefaultDateTimeFormatter()));
-        assertThat(jsonContent).extractingJsonPathBooleanValue("$.events[0].paid").isEqualTo(true);
-        assertThat(jsonContent).extractingJsonPathNumberValue("$.events[0].confirmedRequests").isEqualTo(1000);
-        assertThat(jsonContent).extractingJsonPathNumberValue("$.events[0].views").isEqualTo(10000);
+        Assertions.assertThat(jsonContent).extractingJsonPathNumberValue("$.events[0].id").isEqualTo(1);
+        Assertions.assertThat(jsonContent).extractingJsonPathStringValue("$.events[0].title").isEqualTo("TestEvent");
+        Assertions.assertThat(jsonContent).extractingJsonPathStringValue("$.events[0].annotation").isEqualTo("TestAnnotation");
+        Assertions.assertThat(jsonContent).extractingJsonPathStringValue("$.events[0].eventDate").isEqualTo(testTimestamp.format(ConstantsDate.getDefaultDateTimeFormatter()));
+        Assertions.assertThat(jsonContent).extractingJsonPathBooleanValue("$.events[0].paid").isEqualTo(true);
+        Assertions.assertThat(jsonContent).extractingJsonPathNumberValue("$.events[0].confirmedRequests").isEqualTo(1000);
+        Assertions.assertThat(jsonContent).extractingJsonPathNumberValue("$.events[0].views").isEqualTo(10000);
 
-        assertThat(jsonContent).extractingJsonPathNumberValue("$.events[0].initiator.id").isEqualTo(10);
-        assertThat(jsonContent).extractingJsonPathStringValue("$.events[0].initiator.name").isEqualTo("TestUser");
+        Assertions.assertThat(jsonContent).extractingJsonPathNumberValue("$.events[0].initiator.id").isEqualTo(10);
+        Assertions.assertThat(jsonContent).extractingJsonPathStringValue("$.events[0].initiator.name").isEqualTo("TestUser");
 
-        assertThat(jsonContent).extractingJsonPathNumberValue("$.events[0].category.id").isEqualTo(100);
-        assertThat(jsonContent).extractingJsonPathStringValue("$.events[0].category.name").isEqualTo("TestCategory");
+        Assertions.assertThat(jsonContent).extractingJsonPathNumberValue("$.events[0].category.id").isEqualTo(100);
+        Assertions.assertThat(jsonContent).extractingJsonPathStringValue("$.events[0].category.name").isEqualTo("TestCategory");
     }
 
+    @SneakyThrows
     @Test
-    void compilationNewDtoTest() throws IOException {
-        CompilationNewDto compilationNewDto = CompilationNewDto.builder()
+    void compilationNewDtoTest() {
+        final CompilationNewDto compilationNewDto = CompilationNewDto.builder()
                 .title("TestCompilationNew")
                 .pinned(true)
                 .events(Arrays.asList(1L, 2L, 3L))
                 .build();
 
-        JsonContent<CompilationNewDto> jsonContent = compilationNewDtoJacksonTester.write(compilationNewDto);
+        final JsonContent<CompilationNewDto> jsonContent = compilationNewDtoJacksonTester.write(compilationNewDto);
 
-        assertThat(jsonContent).extractingJsonPathStringValue("$.title").isEqualTo("TestCompilationNew");
-        assertThat(jsonContent).extractingJsonPathBooleanValue("$.pinned").isEqualTo(true);
-        assertThat(jsonContent).extractingJsonPathArrayValue("$.events").containsExactly(1, 2, 3);
+        Assertions.assertThat(jsonContent).extractingJsonPathStringValue("$.title").isEqualTo("TestCompilationNew");
+        Assertions.assertThat(jsonContent).extractingJsonPathBooleanValue("$.pinned").isEqualTo(true);
+        Assertions.assertThat(jsonContent).extractingJsonPathArrayValue("$.events").containsExactly(1, 2, 3);
     }
 
+    @SneakyThrows
     @Test
-    void compilationUpdateRequestTest() throws Exception {
-        CompilationUpdateRequest compilationUpdateRequest = CompilationUpdateRequest.builder()
+    void compilationUpdateRequestTest() {
+        final CompilationUpdateRequest compilationUpdateRequest = CompilationUpdateRequest.builder()
                 .title("TestCompilationUpdate")
                 .pinned(false)
                 .events(Arrays.asList(4L, 5L, 6L))
                 .build();
 
-        JsonContent<CompilationUpdateRequest> jsonContent = compilationUpdateRequestJacksonTester.write(compilationUpdateRequest);
+        final JsonContent<CompilationUpdateRequest> jsonContent = compilationUpdateRequestJacksonTester.write(compilationUpdateRequest);
 
-        assertThat(jsonContent).extractingJsonPathStringValue("$.title").isEqualTo("TestCompilationUpdate");
-        assertThat(jsonContent).extractingJsonPathBooleanValue("$.pinned").isEqualTo(false);
-        assertThat(jsonContent).extractingJsonPathArrayValue("$.events").containsExactly(4, 5, 6);
+        Assertions.assertThat(jsonContent).extractingJsonPathStringValue("$.title").isEqualTo("TestCompilationUpdate");
+        Assertions.assertThat(jsonContent).extractingJsonPathBooleanValue("$.pinned").isEqualTo(false);
+        Assertions.assertThat(jsonContent).extractingJsonPathArrayValue("$.events").containsExactly(4, 5, 6);
     }
 
     private List<EventShortDto> getEvents() {

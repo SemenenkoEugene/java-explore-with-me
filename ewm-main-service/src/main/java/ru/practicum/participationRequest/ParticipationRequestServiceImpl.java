@@ -12,7 +12,6 @@ import ru.practicum.user.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,45 +20,44 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
     private final ParticipationRequestRepository participationRequestRepository;
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
+    private final ParticipationRequestMapper participationRequestMapper;
 
     @Override
-    public List<ParticipationRequestDto> getAll(long userId) {
-        findUserById(userId);
+    public List<ParticipationRequestDto> getAll(final long userId) {
         return participationRequestRepository.findAllByRequesterId(userId).stream()
-                .map(ParticipationRequestMapper.INSTANCE::toDto)
-                .collect(Collectors.toList());
+                .map(participationRequestMapper::toDto)
+                .toList();
     }
 
-    public ParticipationRequestDto create(long userId, long eventId) {
-        User requester = findUserById(userId);
-        Event event = findEventById(eventId);
+    public ParticipationRequestDto create(final long userId, final long eventId) {
+        final User requester = findUserById(userId);
+        final Event event = findEventById(eventId);
 
         if (event.getInitiator().getId().equals(userId)) {
             throw new ConflictException("Event initiator cannot submit a participation request for own event");
         }
 
-        if (!event.getState().equals(EventState.PUBLISHED)) {
+        if (event.getState() != EventState.PUBLISHED) {
             throw new ConflictException("Cannot participate in an unpublished event");
         }
 
-        if (event.getParticipantLimit() > 0) {
-            if (event.getParticipantLimit() <= participationRequestRepository.countByEventIdAndStatus(eventId, ParticipationRequestState.CONFIRMED)) {
-                throw new ConflictException("The number of participation requests has exceeded the limit for the event");
-            }
+        if (event.getParticipantLimit() > 0 && event.getParticipantLimit() <= participationRequestRepository.countByEventIdAndStatus(eventId, ParticipationRequestState.CONFIRMED)) {
+            throw new ConflictException("The number of participation requests has exceeded the limit for the event");
         }
 
-        ParticipationRequest participationRequest = new ParticipationRequest();
+        final ParticipationRequest participationRequest = new ParticipationRequest();
         participationRequest.setRequester(requester);
         participationRequest.setEvent(event);
         participationRequest.setCreated(LocalDateTime.now());
         participationRequest.setStatus(event.getRequestModeration() && !event.getParticipantLimit().equals(0) ? ParticipationRequestState.PENDING : ParticipationRequestState.CONFIRMED);
 
-        return ParticipationRequestMapper.INSTANCE.toDto(participationRequestRepository.save(participationRequest));
+        final ParticipationRequest saved = participationRequestRepository.save(participationRequest);
+
+        return participationRequestMapper.toDto(saved);
     }
 
-    public ParticipationRequestDto patch(long userId, long requestId) {
-        findUserById(userId);
-        ParticipationRequest participationRequest = findParticipationRequestById(requestId);
+    public ParticipationRequestDto patch(final long userId, final long requestId) {
+        final ParticipationRequest participationRequest = findParticipationRequestById(requestId);
 
         if (!participationRequest.getRequester().getId().equals(userId)) {
             throw new NotFoundException("No events available for editing were found");
@@ -67,21 +65,23 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
 
         participationRequest.setStatus(ParticipationRequestState.CANCELED);
 
-        return ParticipationRequestMapper.INSTANCE.toDto(participationRequestRepository.save(participationRequest));
+        final ParticipationRequest saved = participationRequestRepository.save(participationRequest);
+
+        return participationRequestMapper.toDto(saved);
     }
 
-    private ParticipationRequest findParticipationRequestById(long id) {
+    private ParticipationRequest findParticipationRequestById(final long id) {
         return participationRequestRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Participation request with id=" + id + " was not found"));
+                .orElseThrow(() -> new NotFoundException("Participation request with id=%d was not found".formatted(id)));
     }
 
-    private User findUserById(long id) {
+    private User findUserById(final long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("User with id=" + id + " was not found"));
+                .orElseThrow(() -> new NotFoundException("User with id=%d was not found".formatted(id)));
     }
 
-    private Event findEventById(long id) {
+    private Event findEventById(final long id) {
         return eventRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Event with id=" + id + " was not found"));
+                .orElseThrow(() -> new NotFoundException("Event with id=%d was not found".formatted(id)));
     }
 }

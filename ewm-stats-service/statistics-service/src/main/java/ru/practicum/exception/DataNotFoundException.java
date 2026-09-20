@@ -1,7 +1,7 @@
 package ru.practicum.exception;
 
 public class DataNotFoundException extends RuntimeException {
-    public DataNotFoundException(String message) {
+    public DataNotFoundException(final String message) {
         super(message);
     }
 }

@@ -7,8 +7,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 @Slf4j
 public class StatsServer {
-    public static void main(String[] args) {
-        log.info("Запуск этого сервера");
+    public static void main(final String[] args) {
+        log.info("Запуск сервера статистики");
         SpringApplication.run(StatsServer.class, args);
     }
 }

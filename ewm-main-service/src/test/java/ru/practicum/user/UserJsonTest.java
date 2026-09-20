@@ -21,13 +21,13 @@ class UserJsonTest {
 
     @Test
     void userDtoTest() throws IOException {
-        UserDto userDto = UserDto.builder()
+        final UserDto userDto = UserDto.builder()
                 .id(1L)
                 .name("TestName")
                 .email("TestEmail")
                 .build();
 
-        JsonContent<UserDto> jsonContent = userDtoJacksonTester.write(userDto);
+        final JsonContent<UserDto> jsonContent = userDtoJacksonTester.write(userDto);
 
         assertThat(jsonContent).extractingJsonPathNumberValue("$.id").isEqualTo(1);
         assertThat(jsonContent).extractingJsonPathStringValue("$.name").isEqualTo("TestName");
@@ -36,12 +36,12 @@ class UserJsonTest {
 
     @Test
     void userShotDtoTest() throws IOException {
-        UserShortDto userShortDto = UserShortDto.builder()
+        final UserShortDto userShortDto = UserShortDto.builder()
                 .id(1L)
                 .name("TestName")
                 .build();
 
-        JsonContent<UserShortDto> jsonContent = userShortDtoJacksonTester.write(userShortDto);
+        final JsonContent<UserShortDto> jsonContent = userShortDtoJacksonTester.write(userShortDto);
 
         assertThat(jsonContent).extractingJsonPathNumberValue("$.id").isEqualTo(1);
         assertThat(jsonContent).extractingJsonPathStringValue("$.name").isEqualTo("TestName");

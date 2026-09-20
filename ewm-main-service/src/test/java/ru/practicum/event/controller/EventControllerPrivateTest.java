@@ -1,12 +1,16 @@
 package ru.practicum.event.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ru.practicum.event.EventRequestStatusUpdateRequest;
 import ru.practicum.event.EventUpdateUserRequest;
 import ru.practicum.event.dto.EventNewDto;
@@ -17,20 +21,9 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @WebMvcTest(controllers = EventControllerPrivate.class)
 class EventControllerPrivateTest {
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -40,82 +33,88 @@ class EventControllerPrivateTest {
     @MockitoBean
     private EventService eventService;
 
+    @SneakyThrows
     @Test
-    public void getAll_allValid() throws Exception {
-        when(eventService.getAllByInitiator(anyLong(), anyInt(), anyInt())).thenReturn(null);
+    void getAll_allValid() {
+        Mockito.when(eventService.getAllByInitiator(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt())).thenReturn(null);
 
-        mockMvc.perform(get("/users/{userId}/events", 0))
-                .andExpect(status().is2xxSuccessful());
+        mockMvc.perform(MockMvcRequestBuilders.get("/users/{userId}/events", 0))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
 
-        verify(eventService, times(1)).getAllByInitiator(anyLong(), anyInt(), anyInt());
-        verifyNoMoreInteractions(eventService);
+        Mockito.verify(eventService).getAllByInitiator(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt());
+        Mockito.verifyNoMoreInteractions(eventService);
     }
 
+    @SneakyThrows
     @Test
-    public void getById_allValid() throws Exception {
-        when(eventService.getByIdByInitiator(anyLong(), anyLong())).thenReturn(null);
+    void getById_allValid() {
+        Mockito.when(eventService.getByIdByInitiator(Mockito.anyLong(), Mockito.anyLong())).thenReturn(null);
 
-        mockMvc.perform(get("/users/{userId}/events/{eventId}", 0, 0))
-                .andExpect(status().is2xxSuccessful());
+        mockMvc.perform(MockMvcRequestBuilders.get("/users/{userId}/events/{eventId}", 0, 0))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
 
-        verify(eventService, times(1)).getByIdByInitiator(anyLong(), anyLong());
-        verifyNoMoreInteractions(eventService);
+        Mockito.verify(eventService).getByIdByInitiator(Mockito.anyLong(), Mockito.anyLong());
+        Mockito.verifyNoMoreInteractions(eventService);
     }
 
+    @SneakyThrows
     @Test
-    public void getParticipationRequestsByInitiator_allValid() throws Exception {
-        when(eventService.getParticipationRequestsByInitiator(anyLong(), anyLong())).thenReturn(null);
+    void getParticipationRequestsByInitiator_allValid() {
+        Mockito.when(eventService.getParticipationRequestsByInitiator(Mockito.anyLong(), Mockito.anyLong())).thenReturn(null);
 
-        mockMvc.perform(get("/users/{userId}/events/{eventId}/requests", 0, 0))
-                .andExpect(status().is2xxSuccessful());
+        mockMvc.perform(MockMvcRequestBuilders.get("/users/{userId}/events/{eventId}/requests", 0, 0))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
 
-        verify(eventService, times(1)).getParticipationRequestsByInitiator(anyLong(), anyLong());
-        verifyNoMoreInteractions(eventService);
+        Mockito.verify(eventService).getParticipationRequestsByInitiator(Mockito.anyLong(), Mockito.anyLong());
+        Mockito.verifyNoMoreInteractions(eventService);
     }
 
+    @SneakyThrows
     @Test
-    public void create_allValid() throws Exception {
-        when(eventService.create(anyLong(), any())).thenReturn(null);
+    void create_allValid() {
+        Mockito.when(eventService.create(Mockito.anyLong(), Mockito.any())).thenReturn(null);
 
-        mockMvc.perform(post("/users/{userId}/events", 0)
+        mockMvc.perform(MockMvcRequestBuilders.post("/users/{userId}/events", 0)
                         .content(objectMapper.writeValueAsString(getValidEventNewDto()))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is2xxSuccessful());
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
 
-        verify(eventService, times(1)).create(anyLong(), any());
-        verifyNoMoreInteractions(eventService);
+        Mockito.verify(eventService).create(Mockito.anyLong(), Mockito.any());
+        Mockito.verifyNoMoreInteractions(eventService);
     }
 
+    @SneakyThrows
     @Test
-    public void patchEventInfo_allValid() throws Exception {
-        when(eventService.patchByInitiator(anyLong(), anyLong(), any())).thenReturn(null);
+    void patchEventInfo_allValid() {
+        Mockito.when(eventService.patchByInitiator(Mockito.anyLong(), Mockito.anyLong(), Mockito.any())).thenReturn(null);
 
-        mockMvc.perform(patch("/users/{userId}/events/{eventId}", 0, 0)
+        mockMvc.perform(MockMvcRequestBuilders.patch("/users/{userId}/events/{eventId}", 0, 0)
                         .content(objectMapper.writeValueAsString(EventUpdateUserRequest.builder().build()))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is2xxSuccessful());
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
 
-        verify(eventService, times(1)).patchByInitiator(anyLong(), anyLong(), any());
-        verifyNoMoreInteractions(eventService);
+        Mockito.verify(eventService).patchByInitiator(Mockito.anyLong(), Mockito.anyLong(), Mockito.any());
+        Mockito.verifyNoMoreInteractions(eventService);
     }
 
+    @SneakyThrows
     @Test
-    public void patchEventRequests_allValid() throws Exception {
-        when(eventService.patchParticipationRequestsByInitiator(anyLong(), anyLong(), any())).thenReturn(null);
+    void patchEventRequests_allValid() {
+        Mockito.when(eventService.patchParticipationRequestsByInitiator(Mockito.anyLong(), Mockito.anyLong(), Mockito.any())).thenReturn(null);
 
-        mockMvc.perform(patch("/users/{userId}/events/{eventId}/requests", 0, 0)
+        mockMvc.perform(MockMvcRequestBuilders.patch("/users/{userId}/events/{eventId}/requests", 0, 0)
                         .content(objectMapper.writeValueAsString(getValidEventRequestStatusUpdateRequest()))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is2xxSuccessful());
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
 
-        verify(eventService, times(1)).patchParticipationRequestsByInitiator(anyLong(), anyLong(), any());
-        verifyNoMoreInteractions(eventService);
+        Mockito.verify(eventService).patchParticipationRequestsByInitiator(Mockito.anyLong(), Mockito.anyLong(), Mockito.any());
+        Mockito.verifyNoMoreInteractions(eventService);
     }
 
     private EventNewDto getValidEventNewDto() {

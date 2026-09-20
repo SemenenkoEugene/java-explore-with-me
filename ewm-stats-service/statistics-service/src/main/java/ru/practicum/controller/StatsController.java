@@ -29,17 +29,17 @@ public class StatsController {
 
     @PostMapping("/hit")
     @ResponseStatus(HttpStatus.CREATED)
-    public void saveHit(@Valid @RequestBody EndpointHitDto endpointHitDto) {
+    public void saveHit(@Valid @RequestBody final EndpointHitDto endpointHitDto) {
         log.info("Создание записи для статистики {}", endpointHitDto.toString());
         statsService.saveHit(endpointHitDto);
     }
 
     @GetMapping("/stats")
     public List<ViewStatsDto> findStats(
-            @RequestParam(name = "start", required = false) @DateTimeFormat(pattern = DATE_TIME) LocalDateTime start,
-            @RequestParam(name = "end", required = false) @DateTimeFormat(pattern = DATE_TIME) LocalDateTime end,
-            @RequestParam(required = false) List<String> uris,
-            @RequestParam(defaultValue = "false") boolean unique) {
+            @RequestParam(name = "start", required = false) @DateTimeFormat(pattern = DATE_TIME) final LocalDateTime start,
+            @RequestParam(name = "end", required = false) @DateTimeFormat(pattern = DATE_TIME) final LocalDateTime end,
+            @RequestParam(required = false) final List<String> uris,
+            @RequestParam(defaultValue = "false") final boolean unique) {
         if (start == null) {
             throw new ValidationException("Required request parameter 'start' for method parameter type LocalDateTime is not present");
         }

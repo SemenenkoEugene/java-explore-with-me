@@ -1,7 +1,5 @@
 package ru.practicum.exception;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -56,10 +54,6 @@ public class ErrorHandler {
         return new ErrorResponse("error", e.getMessage());
     }
 
-    @Getter
-    @RequiredArgsConstructor
-    private static class ErrorResponse {
-        private final String error;
-        private final String description;
+    private record ErrorResponse(String error, String description) {
     }
 }

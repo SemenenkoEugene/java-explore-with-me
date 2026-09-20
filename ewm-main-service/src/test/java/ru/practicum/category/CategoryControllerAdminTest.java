@@ -1,26 +1,19 @@
 package ru.practicum.category;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.nio.charset.StandardCharsets;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = CategoryControllerAdmin.class)
 class CategoryControllerAdminTest {
@@ -34,44 +27,47 @@ class CategoryControllerAdminTest {
     @MockitoBean
     private CategoryService categoryService;
 
+    @SneakyThrows
     @Test
-    public void create_allValid() throws Exception {
-        when(categoryService.create(any())).thenReturn(null);
+    void create_allValid() {
+        Mockito.when(categoryService.create(Mockito.any())).thenReturn(null);
 
-        mockMvc.perform(post("/admin/categories")
+        mockMvc.perform(MockMvcRequestBuilders.post("/admin/categories")
                         .content(objectMapper.writeValueAsString(getValidCategoryDto()))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is2xxSuccessful());
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
 
-        verify(categoryService, times(1)).create(any());
-        verifyNoMoreInteractions(categoryService);
+        Mockito.verify(categoryService).create(Mockito.any());
+        Mockito.verifyNoMoreInteractions(categoryService);
     }
 
+    @SneakyThrows
     @Test
-    public void patch_allValid() throws Exception {
-        when(categoryService.patch(anyLong(), any())).thenReturn(null);
+    void patch_allValid() {
+        Mockito.when(categoryService.patch(Mockito.anyLong(), Mockito.any())).thenReturn(null);
 
-        mockMvc.perform(patch("/admin/categories/{catId}", 0)
+        mockMvc.perform(MockMvcRequestBuilders.patch("/admin/categories/{catId}", 0)
                         .content(objectMapper.writeValueAsString(getValidCategoryDto()))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is2xxSuccessful());
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
 
-        verify(categoryService, times(1)).patch(anyLong(), any());
-        verifyNoMoreInteractions(categoryService);
+        Mockito.verify(categoryService).patch(Mockito.anyLong(), Mockito.any());
+        Mockito.verifyNoMoreInteractions(categoryService);
     }
 
+    @SneakyThrows
     @Test
-    public void delete_allValid() throws Exception {
-        doNothing().when(categoryService).delete(anyLong());
+    void delete_allValid() {
+        Mockito.doNothing().when(categoryService).delete(Mockito.anyLong());
 
-        mockMvc.perform(delete("/admin/categories/{catId}", 0))
-                .andExpect(status().is2xxSuccessful());
-        verify(categoryService, times(1)).delete(anyLong());
-        verifyNoMoreInteractions(categoryService);
+        mockMvc.perform(MockMvcRequestBuilders.delete("/admin/categories/{catId}", 0))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
+        Mockito.verify(categoryService).delete(Mockito.anyLong());
+        Mockito.verifyNoMoreInteractions(categoryService);
     }
 
     private CategoryDto getValidCategoryDto() {

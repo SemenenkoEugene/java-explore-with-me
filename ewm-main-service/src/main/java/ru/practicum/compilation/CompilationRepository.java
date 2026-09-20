@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CompilationRepository extends JpaRepository<Compilation, Long> {
     @Query("SELECT c FROM Compilation c " +
-            "WHERE ((:pinned) IS NULL OR c.pinned = :pinned)")
+           "WHERE ((:pinned) IS NULL OR c.pinned = :pinned)")
     Page<Compilation> findAllByPublic(@Param("pinned") Boolean pinned, Pageable pageable);
 }

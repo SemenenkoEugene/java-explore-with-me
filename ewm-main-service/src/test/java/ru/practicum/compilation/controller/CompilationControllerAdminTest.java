@@ -1,32 +1,25 @@
 package ru.practicum.compilation.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ru.practicum.compilation.CompilationUpdateRequest;
 import ru.practicum.compilation.dto.CompilationNewDto;
 import ru.practicum.compilation.service.CompilationService;
 
 import java.nio.charset.StandardCharsets;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @WebMvcTest(controllers = CompilationControllerAdmin.class)
 class CompilationControllerAdminTest {
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -36,46 +29,49 @@ class CompilationControllerAdminTest {
     @MockitoBean
     private CompilationService compilationService;
 
+    @SneakyThrows
     @Test
-    public void create_allValid() throws Exception {
-        when(compilationService.create(any())).thenReturn(null);
+    public void create_allValid() {
+        Mockito.when(compilationService.create(Mockito.any())).thenReturn(null);
 
-        mockMvc.perform(post("/admin/compilations")
+        mockMvc.perform(MockMvcRequestBuilders.post("/admin/compilations")
                         .content(objectMapper.writeValueAsString(getValidCompilationNewDto()))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is2xxSuccessful());
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
 
-        verify(compilationService, times(1)).create(any());
-        verifyNoMoreInteractions(compilationService);
+        Mockito.verify(compilationService).create(Mockito.any());
+        Mockito.verifyNoMoreInteractions(compilationService);
 
     }
 
+    @SneakyThrows
     @Test
-    public void patch_allValid() throws Exception {
-        when(compilationService.patch(anyLong(), any())).thenReturn(null);
+    public void patch_allValid() {
+        Mockito.when(compilationService.patch(Mockito.anyLong(), Mockito.any())).thenReturn(null);
 
-        mockMvc.perform(patch("/admin/compilations/{compId}", 0)
+        mockMvc.perform(MockMvcRequestBuilders.patch("/admin/compilations/{compId}", 0)
                         .content(objectMapper.writeValueAsString(CompilationUpdateRequest.builder().build()))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is2xxSuccessful());
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
 
-        verify(compilationService, times(1)).patch(anyLong(), any());
-        verifyNoMoreInteractions(compilationService);
+        Mockito.verify(compilationService).patch(Mockito.anyLong(), Mockito.any());
+        Mockito.verifyNoMoreInteractions(compilationService);
     }
 
+    @SneakyThrows
     @Test
-    public void delete_allValid() throws Exception {
-        doNothing().when(compilationService).delete(anyLong());
+    public void delete_allValid() {
+        Mockito.doNothing().when(compilationService).delete(Mockito.anyLong());
 
-        mockMvc.perform(delete("/admin/compilations/{compId}", 0))
-                .andExpect(status().is2xxSuccessful());
+        mockMvc.perform(MockMvcRequestBuilders.delete("/admin/compilations/{compId}", 0))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
 
-        verify(compilationService, times(1)).delete(anyLong());
-        verifyNoMoreInteractions(compilationService);
+        Mockito.verify(compilationService).delete(Mockito.anyLong());
+        Mockito.verifyNoMoreInteractions(compilationService);
     }
 
     private CompilationNewDto getValidCompilationNewDto() {

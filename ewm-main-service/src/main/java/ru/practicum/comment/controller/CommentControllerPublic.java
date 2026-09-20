@@ -18,7 +18,7 @@ public class CommentControllerPublic {
     private final CommentService commentService;
 
     @GetMapping("/{eventId}")
-    public List<CommentDto> getAllByEventId(@PathVariable long eventId) {
+    public List<CommentDto> getAllByEventId(@PathVariable final long eventId) {
         return commentService.getAllByEventId(eventId);
     }
 }

@@ -1,5 +1,6 @@
 package ru.practicum.participationRequest;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
@@ -7,8 +8,6 @@ import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
 
 import java.io.IOException;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @JsonTest
 class ParticipationRequestJsonTest {
@@ -18,18 +17,18 @@ class ParticipationRequestJsonTest {
 
     @Test
     void participationRequestDtoTest() throws IOException {
-        ParticipationRequestDto participationRequestDto = ParticipationRequestDto.builder()
+        final ParticipationRequestDto participationRequestDto = ParticipationRequestDto.builder()
                 .id(1L)
                 .requester(10L)
                 .event(100L)
                 .status(ParticipationRequestState.CONFIRMED)
                 .build();
 
-        JsonContent<ParticipationRequestDto> jsonContent = participationRequestDtoJacksonTester.write(participationRequestDto);
+        final JsonContent<ParticipationRequestDto> jsonContent = participationRequestDtoJacksonTester.write(participationRequestDto);
 
-        assertThat(jsonContent).extractingJsonPathNumberValue("$.id").isEqualTo(1);
-        assertThat(jsonContent).extractingJsonPathNumberValue("$.requester").isEqualTo(10);
-        assertThat(jsonContent).extractingJsonPathNumberValue("$.event").isEqualTo(100);
-        assertThat(jsonContent).extractingJsonPathStringValue("$.status").isEqualTo("CONFIRMED");
+        Assertions.assertThat(jsonContent).extractingJsonPathNumberValue("$.id").isEqualTo(1);
+        Assertions.assertThat(jsonContent).extractingJsonPathNumberValue("$.requester").isEqualTo(10);
+        Assertions.assertThat(jsonContent).extractingJsonPathNumberValue("$.event").isEqualTo(100);
+        Assertions.assertThat(jsonContent).extractingJsonPathStringValue("$.status").isEqualTo("CONFIRMED");
     }
 }
